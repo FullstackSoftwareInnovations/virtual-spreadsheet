@@ -1,6 +1,6 @@
 # virtual-spreadsheet
 
-> A lightweight, virtualized spreadsheet capable of supporting millions of lines of input.
+> A lightweight, virtualized spreadsheet capable of supporting 100k+ lines of input.
 
 [![NPM](https://img.shields.io/npm/v/virtual-spreadsheet.svg)](https://www.npmjs.com/package/virtual-spreadsheet) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -26,9 +26,12 @@ function Example(props)
    */
   render() {
     return  <Spreadsheet csv={csv}
-			 cellWidth = {125}
-			 cellHeight = {25}
-			 notARealProp = { 'Below are the default colors shown as a styling example' }
+			 notARealProp = { 'Cell size and font cannot be set with the cellStyle or headerStyle props' }
+			 cellWidth = {'auto'} {/*'auto' or number*/}
+			 cellHeight = {25 /*number only*/}
+			 cellFont = {'18px arial'}
+			 
+			 notARealProp = { 'Style the cells using the props below' }
 			 rowHeaderStyle={{color: '#ffffff', background: '#0077cc'}}
 			 columnHeaderStyle={{color: '#ffffff',background: '#0077cc'}}
 			 cellStyle={{ color: '#000000', background: '#ffffff',}}

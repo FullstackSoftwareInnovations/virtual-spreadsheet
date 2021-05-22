@@ -2,6 +2,8 @@ import React from 'react'
 import { useHover } from '../hooks/useHover'
 
 /* Default Styles */
+const defaultFont = '18px Arial'
+
 const defaultCellStyle = {
   verticalAlign: 'bottom',
   textAlign: 'center',
@@ -35,7 +37,8 @@ export function RowHeaderCell(props) {
     ...props.style,
     ...defaultCellStyle,
     ...defaultHeaderStyle,
-    ...(props.rowHeaderStyle ?? {})
+    ...(props.rowHeaderStyle ?? {}),
+    font: props.cellFont ?? defaultFont
   }
 
   return (
@@ -50,7 +53,8 @@ export function ColumnHeaderCell(props) {
     ...props.style,
     ...defaultCellStyle,
     ...defaultHeaderStyle,
-    ...(props.columnHeaderStyle ?? {})
+    ...(props.columnHeaderStyle ?? {}),
+    font: props.cellFont ?? defaultFont
   }
 
   return (
@@ -67,7 +71,8 @@ export function DataCell(props) {
     ...props.style,
     ...defaultCellStyle,
     ...defaultDataCellStyle,
-    ...(props.cellStyle ?? {})
+    ...(props.cellStyle ?? {}),
+    font: props.cellFont ?? defaultFont
   }
 
   if (hovered || props.isSelected)

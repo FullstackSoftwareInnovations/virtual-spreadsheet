@@ -12,9 +12,10 @@ function Spreadsheet(props) {
   const [sortOrder, setOrder] = useState('NRM0')
 
   useEffect(() => {
-    if (props.cells) setCellGrid(props.cells)
-    else setCellGrid(formatCSV(props.csv))
-  }, [props.csv, props.data])
+    const font = props.cellFont ?? '14px arial'
+    const cellWidth =  props.cellWidth ?? 125
+    setCellGrid(formatCSV(props.csv, cellWidth, font))
+  }, [props.csv])
 
   const handleClick = (clicked: Coordinate) => {
     setCell(clicked)
@@ -34,7 +35,8 @@ function Spreadsheet(props) {
     )
   }
 
-  const numCols = cellGrid.length === 0 ? 1 : cellGrid[0].length + 1
+
+  const numCols = cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1
 
   return (
     <AutoSizer>
@@ -42,9 +44,9 @@ function Spreadsheet(props) {
         <MultiGrid
           cellRenderer={getCellRenderer}
           columnCount={numCols}
-          columnWidth={props.cellWidth ?? 125}
+          columnWidth={(col) => (col.index === 0) ? 125 : cellGrid.widths[col.index-1]}
           fixedColumnCount={1}
-          rowCount={cellGrid.length + 1}
+          rowCount={cellGrid.cells.length + 1}
           rowHeight={props.cellHeight ?? 50}
           fixedRowCount={1}
           height={height}
@@ -100,12 +102,17 @@ function CellRenderer(
     <DataCell
       key={key}
       style={style}
-      data={cellGrid[row - 1][col - 1]} // -1 to account for row/col number on Grid
+      data={cellGrid.cells[row - 1][col - 1]} // -1 to account for row/col number on Grid
       isSelected={isSelected}
       onClick={handleClick}
       {...props}
     />
   )
+}
+
+function ColumnSizer(index: number, grid: CellGrid) {
+  if (index === 0) return 125
+  else return grid.widths[index -1] //-1 to account for rowNumber column
 }
 
 export default Spreadsheet

@@ -1,24 +1,40 @@
-export type CellGrid = (string | number)[][]
+import { getCellWidth } from '../functions/CellHelper'
 
-export function emptyCellGrid() {
-  return [['']]
+export interface CellGrid {
+  cells: (string | number)[][]
+  widths: number[]
 }
 
-export function formatCSV(csv: string) {
+export function emptyCellGrid() {
+  return { cells: [['']], widths: [] }
+}
+
+export function formatCSV(csv: string, cellWidth, font:string) {
+  const autoSize = cellWidth === 'auto'
   const rows = csv.split('\n')
-  let cells: CellGrid = [[]]
-  cells = rows.map((row) => {
-    return row.split(',').map((cell) => {
+  const cellGrid: CellGrid = emptyCellGrid()
+  
+  cellGrid.cells = rows.map((row) => {
+    return row.split(',').map((cell, col) => {
+
+      if(autoSize){
+        // Calculate width and see if it is bigger than current column size
+        const calcWidth: number = getCellWidth(cell, font)
+        if (!cellGrid.widths[col] || cellGrid.widths[col] < calcWidth) cellGrid.widths[col] = calcWidth
+      } else{
+        // else take default size
+        if (!cellGrid.widths[col]) cellGrid.widths[col] = cellWidth
+      }
+
       const tryInt = parseInt(cell)
       const tryFloat = parseFloat(cell)
-
       if (!isNaN(tryInt) && cell.length === tryInt.toString().length)
         return tryInt
-      if (!isNaN(tryFloat) && cell.length === tryFloat.toString().length)
+      else if (!isNaN(tryFloat) && cell.length === tryFloat.toString().length)
         return tryFloat
-      return cell
+      else return cell
     })
   })
 
-  return cells
+  return cellGrid
 }
