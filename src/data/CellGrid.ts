@@ -10,20 +10,21 @@ export function emptyCellGrid() {
 }
 
 export function formatCSV(csv: string, cellWidth, font:string) {
-  const autoSize = cellWidth === 'auto'
-  const rows = csv.split('\n')
-  const cellGrid: CellGrid = emptyCellGrid()
-  
-  cellGrid.cells = rows.map((row) => {
-    return row.split(',').map((cell, col) => {
+  const autoWidthDepth: number = getAutoWidthMaxDepth(cellWidth)
+  const autoWidthEnabled = typeof cellWidth === 'string' && cellWidth.startsWith('auto')
 
-      if(autoSize){
+  const cellGrid: CellGrid = emptyCellGrid()
+  const rows = csv.split('\n')
+  cellGrid.cells = rows.map((row, rowIndex) => {
+    return row.split(',').map((cell, colIndex) => {
+
+      if( autoWidthEnabled && (cellWidth === 'auto-deep' ||  rowIndex < autoWidthDepth)){
         // Calculate width and see if it is bigger than current column size
         const calcWidth: number = getCellWidth(cell, font)
-        if (!cellGrid.widths[col] || cellGrid.widths[col] < calcWidth) cellGrid.widths[col] = calcWidth
+        if (!cellGrid.widths[colIndex] || cellGrid.widths[colIndex] < calcWidth) cellGrid.widths[colIndex] = calcWidth
       } else{
         // else take default size
-        if (!cellGrid.widths[col]) cellGrid.widths[col] = cellWidth
+        if (!cellGrid.widths[colIndex]) cellGrid.widths[colIndex] = cellWidth
       }
 
       const tryInt = parseInt(cell)
@@ -37,4 +38,13 @@ export function formatCSV(csv: string, cellWidth, font:string) {
   })
 
   return cellGrid
+}
+
+// Returns 1000 by default for performance purposes
+// Can be passed a max depth in the cellWidth parameter following 'auto-'
+function getAutoWidthMaxDepth(cellWidth: string|number): number{
+  const defaultMax = 1000
+  if (typeof cellWidth === 'number') return defaultMax
+  const paramDepth = parseInt(cellWidth.substring(cellWidth.indexOf('auto-')+5))
+  return isNaN(paramDepth) ? defaultMax : paramDepth
 }

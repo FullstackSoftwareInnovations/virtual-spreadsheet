@@ -1,6 +1,6 @@
 # virtual-spreadsheet
 
-> A lightweight, virtualized spreadsheet capable of supporting 100k+ lines of input.
+> A lightweight, virtualized spreadsheet capable of supporting 250k+ lines of input.
 
 [![NPM](https://img.shields.io/npm/v/virtual-spreadsheet.svg)](https://www.npmjs.com/package/virtual-spreadsheet) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -26,8 +26,8 @@ function Example(props)
    */
   render() {
     return  <Spreadsheet csv={csv}
-			 notARealProp = { 'Cell size and font cannot be set with the cellStyle or headerStyle props' }
-			 cellWidth = {'auto'} {/*'auto' or number*/}
+			 notARealProp = { 'Cell size and font cannot be set with cellStyle' }
+			 cellWidth = {'auto'} {/*number or 'auto', 'auto-deep', 'auto-number'*/}
 			 cellHeight = {25 /*number only*/}
 			 cellFont = {'18px arial'}
 			 
@@ -40,6 +40,7 @@ function Example(props)
   }
 }
 ```
+
 
 ## License
 
