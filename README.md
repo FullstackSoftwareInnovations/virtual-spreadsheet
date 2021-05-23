@@ -26,8 +26,7 @@ function Example(props)
       .then(csv => csv.text())
       .then(txt => setCSV(txt))
 
-	return  <Spreadsheet
-			     csv={csv}
+	return  <Spreadsheet csv={csv}
 			     notARealProp = { 'Cell size and font cannot be set with cellStyle' }
 			     cellWidth = {'auto' /*number or 'auto', 'auto-deep', 'auto-number'*/}
 			     cellHeight = {25 /*number*/}
