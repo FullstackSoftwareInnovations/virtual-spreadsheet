@@ -25,7 +25,7 @@ const defaultDataCellStyle = {
   color: '#000000',
   background: '#ffffff',
   zIndex: 0,
-  cursor: 'default'
+  cursor: 'text'
 }
 
 const defaultActiveCellStyle = {
@@ -84,6 +84,8 @@ export function DataCell(props) {
       ...(props.activeCellStyle ?? {})
     }
 
+  if (props.readOnly) style = {...style, cursor: 'pointer'}
+
   const handleClick = props.onClick ? props.onClick : () => {}
 
   return (
@@ -93,6 +95,7 @@ export function DataCell(props) {
         style={style}
         onChange={props.update}
         value={props.data}
+        disabled={props.readOnly}
       />
     </div>
   )
