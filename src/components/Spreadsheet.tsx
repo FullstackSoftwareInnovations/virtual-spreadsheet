@@ -1,32 +1,50 @@
-import React, { useEffect, useState } from 'react'
-import { ColumnHeaderCell, DataCell, RowHeaderCell } from './Cells'
+import React, { useEffect, useRef, useState } from "react";
+import { CellRenderer } from './Cells'
 import { MultiGrid, AutoSizer } from 'react-virtualized'
 import type { Coordinate } from '../data/Coordinate'
 import { nullCell } from '../data/Coordinate'
-import { emptyCellGrid, formatCSV } from '../data/CellGrid'
-import type { CellGrid } from '../data/CellGrid'
+import { CellGrid } from '../data/CellGrid'
 
 function Spreadsheet(props) {
-  const [cellGrid, setCellGrid] = useState<CellGrid>(emptyCellGrid())
+  const [cellGrid, setCellGrid] = useState<CellGrid>(new CellGrid())
   const [selectedCell, setCell] = useState(nullCell())
-  const [sortOrder, setOrder] = useState('NRM0')
+  const [updateCount, setCount] = useState(0)
+  const ref = useRef()
+  const forceUpdate = () => setCount(updateCount + 1)
+  let resizeHandle;
 
+
+  // Formats the csv and loads it into the cell grid
   useEffect(() => {
     const font = props.cellFont ?? '14px arial'
-    const cellWidth =  props.cellWidth ?? 125
-    setCellGrid(formatCSV(props.csv, cellWidth, font))
+    const cellWidth = props.cellWidth ?? 125
+    cellGrid.loadCSV(props.csv, font, cellWidth)
+    forceUpdate()
   }, [props.csv])
 
+  // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
     setCell(clicked)
-    if (props.onSelect) props.onSelect(clicked, cellGrid)
+    props.onSelect && props.onSelect(clicked, cellGrid)
+    forceUpdate()
   }
 
+  // Updates the cell value and resizes the grid if neccesary
+  const updateCell = (value, toUpdate: Coordinate) => {
+    resizeHandle && window.clearTimeout( resizeHandle )
+    cellGrid.update(toUpdate, value)
+    forceUpdate()
+    // @ts-ignore
+    resizeHandle = window.setTimeout(()=> ref.current && ref.current.recomputeGridSize(), 1000 )
+  }
+
+  // Returns cell renderer bases on row and col number. Attaches event handlers and style props
   const getCellRenderer = ({ columnIndex, key, rowIndex, style }) => {
     return CellRenderer(
       cellGrid,
       selectedCell,
       handleClick,
+      updateCell,
       columnIndex,
       rowIndex,
       key,
@@ -35,84 +53,25 @@ function Spreadsheet(props) {
     )
   }
 
-
-  const numCols = cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1
-
   return (
     <AutoSizer>
       {({ height, width }) => (
         <MultiGrid
+          ref={ref}
           cellRenderer={getCellRenderer}
-          columnCount={numCols}
-          columnWidth={(col) => (col.index === 0) ? 125 : cellGrid.widths[col.index-1]}
+          columnCount={cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1}
+          columnWidth={(col) => (col.index === 0) ? 125 : cellGrid.widths[col.index - 1]}
           fixedColumnCount={1}
           rowCount={cellGrid.cells.length + 1}
           rowHeight={props.cellHeight ?? 50}
           fixedRowCount={1}
           height={height}
           width={width}
-          sort={sortOrder}
-          selected={selectedCell}
+          count={updateCount}
         />
       )}
     </AutoSizer>
   )
-}
-
-function CellRenderer(
-  cellGrid: CellGrid,
-  selectedCell: Coordinate,
-  clickHandler,
-  col,
-  row,
-  key,
-  style,
-  props
-) {
-  const handleClick = () => clickHandler({ row: row, col: col, val: '' })
-
-  if (col === 0) {
-    return (
-      <RowHeaderCell
-        key={key}
-        style={style}
-        rowNumber={row === 0 ? '' : row}
-        onClick={handleClick}
-        {...props}
-      />
-    )
-  } else if (row === 0) {
-    return (
-      <ColumnHeaderCell
-        key={key}
-        style={style}
-        title={col}
-        onClick={handleClick}
-        {...props}
-      />
-    )
-  }
-
-  const isSelected =
-    (selectedCell.row === row && selectedCell.col === col) ||
-    (selectedCell.row === row && selectedCell.col === 0) ||
-    (selectedCell.row === 0 && selectedCell.col === col)
-
-  return (
-    <DataCell
-      key={key}
-      style={style}
-      data={cellGrid.cells[row - 1][col - 1]} // -1 to account for row/col number on Grid
-      isSelected={isSelected}
-      onClick={handleClick}
-      {...props}
-    />
-  )
-}
-
-function ColumnSizer(index: number, grid: CellGrid) {
-  if (index === 0) return 125
-  else return grid.widths[index -1] //-1 to account for rowNumber column
 }
 
 export default Spreadsheet

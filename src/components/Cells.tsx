@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { ChangeEvent } from 'react'
 import { useHover } from '../hooks/useHover'
+import { CellGrid } from '../data/CellGrid'
+import { Coordinate } from '../data/Coordinate'
 
 /* Default Styles */
 const defaultFont = '18px Arial'
@@ -85,8 +87,71 @@ export function DataCell(props) {
   const handleClick = props.onClick ? props.onClick : () => {}
 
   return (
-    <div ref={ref} style={style} onClick={handleClick}>
-      {props.data}
+    <div onClick={handleClick}>
+      <input
+        ref={ref}
+        style={style}
+        onChange={props.update}
+        value={props.data}
+      />
     </div>
+  )
+}
+
+// Responsible for rendering cells
+export function CellRenderer(
+  cellGrid: CellGrid,
+  selectedCell: Coordinate,
+  clickHandler,
+  updateCell,
+  col,
+  row,
+  key,
+  style,
+  props
+) {
+  const handleClick = () => clickHandler({ row: row, col: col, val: '' })
+
+  if (col === 0) {
+    return (
+      <RowHeaderCell
+        key={key}
+        style={style}
+        rowNumber={row === 0 ? '' : row}
+        onClick={handleClick}
+        {...props}
+      />
+    )
+  } else if (row === 0) {
+    return (
+      <ColumnHeaderCell
+        key={key}
+        style={style}
+        title={col}
+        onClick={handleClick}
+        {...props}
+      />
+    )
+  }
+
+  const cell: Coordinate = { row: row-1, col: col-1 } // -1 to account for headers
+  const updater = (e: ChangeEvent<HTMLInputElement>) => {
+    updateCell(e.target.value, cell)
+  }
+  const isSelected =
+    (selectedCell.row === row && selectedCell.col === col) ||
+    (selectedCell.row === row && selectedCell.col === 0) ||
+    (selectedCell.row === 0 && selectedCell.col === col)
+
+  return (
+    <DataCell
+      key={key}
+      style={style}
+      data={cellGrid.cells[row - 1][col - 1]} // -1 to account for row/col number on Grid
+      isSelected={isSelected}
+      onClick={handleClick}
+      update={updater}
+      {...props}
+    />
   )
 }
