@@ -9,8 +9,9 @@ function Spreadsheet(props) {
   const [cellGrid, setCellGrid] = useState<CellGrid>(new CellGrid())
   const [selectedCell, setCell] = useState(nullCell())
   const [updateCount, setCount] = useState(0)
-  const ref = useRef()
   const forceUpdate = () => setCount(updateCount + 1)
+  const ref = useRef()
+
   let resizeHandle;
 
 
@@ -25,17 +26,18 @@ function Spreadsheet(props) {
   // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
     setCell(clicked)
-    props.onSelect && props.onSelect(clicked, cellGrid)
+    props.onSelect && props.onSelect(clicked, cellGrid.cells)
     forceUpdate()
   }
 
-  // Updates the cell value and resizes the grid if neccesary
+  // Updates the cell value and resizes the grid if necessary
   const updateCell = (value, toUpdate: Coordinate) => {
     resizeHandle && window.clearTimeout( resizeHandle )
     cellGrid.update(toUpdate, value)
-    forceUpdate()
+
     // @ts-ignore
     resizeHandle = window.setTimeout(()=> ref.current && ref.current.recomputeGridSize(), 1000 )
+    forceUpdate()
   }
 
   // Returns cell renderer bases on row and col number. Attaches event handlers and style props
@@ -53,24 +55,28 @@ function Spreadsheet(props) {
     )
   }
 
+  // Wrapped in an AutoSizer to take the height/width of the user's container
   return (
-    <AutoSizer>
-      {({ height, width }) => (
-        <MultiGrid
-          ref={ref}
-          cellRenderer={getCellRenderer}
-          columnCount={cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1}
-          columnWidth={(col) => (col.index === 0) ? 125 : cellGrid.widths[col.index - 1]}
-          fixedColumnCount={1}
-          rowCount={cellGrid.cells.length + 1}
-          rowHeight={props.cellHeight ?? 50}
-          fixedRowCount={1}
-          height={height}
-          width={width}
-          count={updateCount}
-        />
-      )}
-    </AutoSizer>
+    <div style = {{height:'100%', width:'100%'}}>
+      <AutoSizer>
+        {({ height, width }) => (
+          <MultiGrid
+            ref={ref}
+            cellRenderer={getCellRenderer}
+            columnCount={cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1}
+            columnWidth={(col) => (col.index === 0) ? 125 : cellGrid.widths[col.index - 1]}
+            fixedColumnCount={1}
+            rowCount={cellGrid.cells.length + 1}
+            rowHeight={props.cellHeight ?? 50}
+            fixedRowCount={1}
+            height={height}
+            width={width}
+            count={updateCount}
+          />
+        )}
+      </AutoSizer>
+    </div>
+
   )
 }
 

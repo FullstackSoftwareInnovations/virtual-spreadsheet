@@ -158,3 +158,12 @@ export function CellRenderer(
     />
   )
 }
+
+// Gets the data from the selected grid, row, column, or single-cell
+export function CellSelector(coordinate:Coordinate, cellGrid: (string | number)[][]){
+  if (coordinate.row === 0 && coordinate.col === 0 ) return cellGrid
+  else if (coordinate.row !== 0 && coordinate.col!== 0 ) return [[cellGrid[coordinate.row-1][coordinate.col-1]]]
+  else if (coordinate.col=== 0) return [cellGrid[coordinate.row-1]]
+  else return cellGrid.map(row => [row[coordinate.col-1]])
+
+}
