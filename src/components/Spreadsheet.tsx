@@ -26,15 +26,15 @@ function Spreadsheet(props) {
   // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
     setCell(clicked)
-    props.onSelect && props.onSelect(clicked, cellGrid.cells)
+    props.onCellSelect && props.onCellSelect(clicked, cellGrid.cells)
     forceUpdate()
   }
 
   // Updates the cell value and resizes the grid if necessary
-  const updateCell = (value, toUpdate: Coordinate) => {
+  const updateCell = (value, coordinate: Coordinate) => {
     resizeHandle && window.clearTimeout( resizeHandle )
-    cellGrid.update(toUpdate, value)
-
+    cellGrid.update(coordinate, value)
+    props.onCellUpdate && props.onCellUpdate(coordinate, value, cellGrid.cells)
     // @ts-ignore
     resizeHandle = window.setTimeout(()=> ref.current && ref.current.recomputeGridSize(), 1000 )
     forceUpdate()

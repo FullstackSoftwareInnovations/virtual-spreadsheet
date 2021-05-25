@@ -12,23 +12,23 @@ npm install --save virtual-spreadsheet
 
 # Usage
 
-```tsx
+```jsx
 import React, { Component } from 'react'
 import {Spreadsheet} from 'virtual-spreadsheet'
 
 function Example(props)
-   /*
+    /*
     *  The csv prop passed to spreadsheet should use commas to delimit columns and
     *  newline to delimit rows. (TODO: add custom delimiters)
     */
     let [csv, setCSV] = useState("hi,mom\ni'm,on tv!")
-    let [selectedData,setData] = useState<(string | number)[][]>([[""]])
+    let [selectedData, setData] = useState([[""]])
 
     fetch('/big_sample.csv')
         .then(csv => csv.text())
         .then(txt => setCSV(txt))
 
-     const getSelectedData = (coordinate: {row:number, col:number}, cells: (string | number)[][]) => {
+    const getSelectedData = (coordinate, cells) => {
         /*
          * CellSelector retrieves the row, column or cell selected in a 2-d array
          * Can be used for any operations you need to perform when data is selected
@@ -36,25 +36,31 @@ function Example(props)
         setData(CellSelector(coordinate, cells))
     }
 
+    const processUpdate = (coordinate, newVal, cells) => {
+        console.log(newVal, cells) // You can do more interesting things here. I believe in you.
+    }
+
     return (
         <div style = {{height:'75vh', width: '95vw'}}>
             <Spreadsheet csv={csv}
-                         readOnly
 
-                         onSelect = {getSelectedData}
-                         notARealProp = { 'Cell size and font cannot be set with cellStyle' }
+                         notARealProp = { 'You can attach some extra event handlers if needed' }
+                         onCellSelect = {getSelectedData}
+                         onCellUpdate = {processUpdate}
+
+                         notARealProp2 = { 'Cell size and font cannot be set with cellStyle' }
                          cellWidth = {'auto' /*number or 'auto', 'auto-deep', 'auto-number'*/}
                          cellHeight = {25 /*number*/}
                          cellFont = {'18px Arial' /* string */}
 
-                         notARealProp2 = { 'Style the cells using the props below' }
+                         notARealProp3 = { 'Style the cells using the props below' }
                          rowHeaderStyle={{color: '#ffffff', background: '#0077cc'}}
                          columnHeaderStyle={{color: '#ffffff',background: '#0077cc'}}
                          cellStyle={{ color: '#000000', background: '#ffffff',}}
                          activeCellStyle={{color: '#ffffff', background: '#33aaff'}}
             />
-          
-			{JSON.stringify(selectedData) /*Demo of CellSelector*/}
+
+            {JSON.stringify(selectedData) /*Demonstration of CellSelector data*/}
         </div>
     );
   
@@ -66,8 +72,11 @@ function Example(props)
 Should use commas to delimit columns and newline to delimit rows. 
 Values cannot currently have commas (TODO: add custom delimiters, improve value parsing)
 
-### onSelect: function(coordinate, cells: (string | number)[][])
+### onCellSelect: function(coordinate: {row:number, col:number}, cells: (string | number)[ ][ ])
 Called when a cell, row, or column is clicked. You can pass the coordinate and cells to the CellSelector function to get a 2-D array with the selected data
+
+### onCellUpdate: function(coordinate: {row:number, col:number}, newValue: string, cells: (string | number)[ ][ ])
+Called when a cell value is changed. You can do any state updates you need in this method 
 		
 ### readOnly: optional | boolean (default: false)
 If present with no value or set to true, the data cells cannot be edited.

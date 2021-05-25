@@ -1,6 +1,6 @@
 {
   "name": "virtual-spreadsheet",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A lightweight, virtualized spreadsheet capable of supporting millions of lines of input.",
   "keywords": [
     "react", "virtual", "virtualized", "spreadsheet", "csv", "excel", "table", "workbook"
