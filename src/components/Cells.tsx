@@ -61,7 +61,7 @@ export function ColumnHeaderCell(props) {
 
   return (
     <div style={style} onClick={props.onClick}>
-      {props.title}
+      {props.colNumber}
     </div>
   )
 }
@@ -115,42 +115,42 @@ export function CellRenderer(
 ) {
   const handleClick = () => clickHandler({ row: row, col: col, val: '' })
 
-  if (col === 0) {
+  if (col === -1) {
     return (
       <RowHeaderCell
         key={key}
         style={style}
-        rowNumber={row === 0 ? '' : row}
+        rowNumber={row === -1 ? '' : row + 1} // +1 because row indices should start at 1, not 0
         onClick={handleClick}
         {...props}
       />
     )
-  } else if (row === 0) {
+  } else if (row === -1) {
     return (
       <ColumnHeaderCell
         key={key}
         style={style}
-        title={col}
+        colNumber={col + 1} // +1 because col indices should start at 1, not 0
         onClick={handleClick}
         {...props}
       />
     )
   }
 
-  const cell: Coordinate = { row: row-1, col: col-1 } // -1 to account for headers
+  const cell: Coordinate = { row: row, col: col }
   const updater = (e: ChangeEvent<HTMLInputElement>) => {
     updateCell(e.target.value, cell)
   }
   const isSelected =
     (selectedCell.row === row && selectedCell.col === col) ||
-    (selectedCell.row === row && selectedCell.col === 0) ||
-    (selectedCell.row === 0 && selectedCell.col === col)
+    (selectedCell.row === row && selectedCell.col === -1) ||
+    (selectedCell.row === -1 && selectedCell.col === col)
 
   return (
     <DataCell
       key={key}
       style={style}
-      data={cellGrid.cells[row - 1][col - 1]} // -1 to account for row/col number on Grid
+      data={cellGrid.cells[row][col]}
       isSelected={isSelected}
       onClick={handleClick}
       update={updater}
@@ -161,9 +161,9 @@ export function CellRenderer(
 
 // Gets the data from the selected grid, row, column, or single-cell
 export function CellSelector(coordinate:Coordinate, cellGrid: (string | number)[][]){
-  if (coordinate.row === 0 && coordinate.col === 0 ) return cellGrid
-  else if (coordinate.row !== 0 && coordinate.col!== 0 ) return [[cellGrid[coordinate.row-1][coordinate.col-1]]]
-  else if (coordinate.col=== 0) return [cellGrid[coordinate.row-1]]
-  else return cellGrid.map(row => [row[coordinate.col-1]])
+  if (coordinate.row === -1 && coordinate.col === -1 ) return cellGrid
+  else if (coordinate.row !== -1 && coordinate.col!== -1 ) return [[cellGrid[coordinate.row][coordinate.col]]]
+  else if (coordinate.col=== -1) return [cellGrid[coordinate.row]]
+  else return cellGrid.map(row => [row[coordinate.col]])
 
 }

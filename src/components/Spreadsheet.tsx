@@ -9,7 +9,7 @@ function Spreadsheet(props) {
   const [cellGrid, setCellGrid] = useState<CellGrid>(new CellGrid())
   const [selectedCell, setCell] = useState(nullCell())
   const [updateCount, setCount] = useState(0)
-  const forceUpdate = () => setCount(updateCount + 1)
+  const forceRender = () => setCount(updateCount + 1) // Multigrid will only re-render if a non-object prop changes
   const ref = useRef()
 
   let resizeHandle;
@@ -20,24 +20,22 @@ function Spreadsheet(props) {
     const font = props.cellFont ?? '14px arial'
     const cellWidth = props.cellWidth ?? 125
     cellGrid.loadCSV(props.csv, font, cellWidth)
-    forceUpdate()
+    forceRender()
   }, [props.csv])
 
   // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
     setCell(clicked)
     props.onCellSelect && props.onCellSelect(clicked, cellGrid.cells)
-    forceUpdate()
+    forceRender()
   }
 
   // Updates the cell value and resizes the grid if necessary
   const updateCell = (value, coordinate: Coordinate) => {
-    resizeHandle && window.clearTimeout( resizeHandle )
-    cellGrid.update(coordinate, value)
+    // Call prop updater first so user has access to old and new vals
     props.onCellUpdate && props.onCellUpdate(coordinate, value, cellGrid.cells)
-    // @ts-ignore
-    resizeHandle = window.setTimeout(()=> ref.current && ref.current.recomputeGridSize(), 1000 )
-    forceUpdate()
+    cellGrid.update(coordinate, value)
+    forceRender()
   }
 
   // Returns cell renderer bases on row and col number. Attaches event handlers and style props
@@ -47,8 +45,8 @@ function Spreadsheet(props) {
       selectedCell,
       handleClick,
       updateCell,
-      columnIndex,
-      rowIndex,
+      columnIndex - 1, // -1 so my colNum headers don't mess with coordinate calculations
+      rowIndex - 1,    // -1 so my rowNum headers don't mess with coordinate calculations
       key,
       style,
       props

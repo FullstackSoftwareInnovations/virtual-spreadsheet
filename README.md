@@ -17,52 +17,57 @@ import React, { Component } from 'react'
 import {Spreadsheet} from 'virtual-spreadsheet'
 
 function Example(props)
+  /*
+   *  The csv prop passed to spreadsheet should use commas to delimit columns and
+   *  newline to delimit rows. (TODO: add custom delimiters)
+   */
+  const [csv, setCSV] = useState("hi,mom\ni'm,on tv!")
+
+  /* Used to demonstrate the CellSelector. Not necessary for operation */
+  const [selectedData, setData] = useState([['']])
+
+  fetch('/big_sample.csv')
+    .then(csv => csv.text())
+    .then(txt => setCSV(txt))
+
+  const getSelectedData = (coordinate, cells) => {
     /*
-    *  The csv prop passed to spreadsheet should use commas to delimit columns and
-    *  newline to delimit rows. (TODO: add custom delimiters)
-    */
-    let [csv, setCSV] = useState("hi,mom\ni'm,on tv!")
-    let [selectedData, setData] = useState([[""]])
+     * CellSelector retrieves the row, column or cell selected in a 2-d array
+     * Can be used for any operations you need to perform when data is selected
+     */
+    setData(CellSelector(coordinate, cells))
+  }
 
-    fetch('/big_sample.csv')
-        .then(csv => csv.text())
-        .then(txt => setCSV(txt))
+  /* Do any state updates you need by passing a function to the onUpdate prop */
+  const processUpdate = (coordinate, newVal, cells) => {
+    cells[coordinate.row][coordinate.col] = newVal
+    setData(CellSelector(coordinate, cells))
+  }
 
-    const getSelectedData = (coordinate, cells) => {
-        /*
-         * CellSelector retrieves the row, column or cell selected in a 2-d array
-         * Can be used for any operations you need to perform when data is selected
-         */
-        setData(CellSelector(coordinate, cells))
-    }
+  return (
+    <div style={{ height: '75vh', width: '95vw' }}>
+      <Spreadsheet
+        csv={csv}
 
-    const processUpdate = (coordinate, newVal, cells) => {
-        console.log(newVal, cells) // You can do more interesting things here. I believe in you.
-    }
+        notARealProp='You can attach some extra event handlers if needed'
+        onCellSelect={getSelectedData}
+        onCellUpdate={processUpdate}
 
-    return (
-        <div style = {{height:'75vh', width: '95vw'}}>
-            <Spreadsheet csv={csv}
+        notARealProp2='Cell size and font cannot be set with cellStyle'
+        cellWidth='auto'
+        cellHeight={25 /* number */}
+        cellFont='18px Arial'
 
-                         notARealProp = { 'You can attach some extra event handlers if needed' }
-                         onCellSelect = {getSelectedData}
-                         onCellUpdate = {processUpdate}
+        notARealProp3='Style the cells using the props below'
+        rowHeaderStyle={{ color: '#ffffff', background: '#0077cc' }}
+        columnHeaderStyle={{ color: '#ffffff', background: '#0077cc' }}
+        cellStyle={{ color: '#000000', background: '#ffffff' }}
+        activeCellStyle={{ color: '#ffffff', background: '#33aaff' }}
+      />
 
-                         notARealProp2 = { 'Cell size and font cannot be set with cellStyle' }
-                         cellWidth = {'auto' /*number or 'auto', 'auto-deep', 'auto-number'*/}
-                         cellHeight = {25 /*number*/}
-                         cellFont = {'18px Arial' /* string */}
-
-                         notARealProp3 = { 'Style the cells using the props below' }
-                         rowHeaderStyle={{color: '#ffffff', background: '#0077cc'}}
-                         columnHeaderStyle={{color: '#ffffff',background: '#0077cc'}}
-                         cellStyle={{ color: '#000000', background: '#ffffff',}}
-                         activeCellStyle={{color: '#ffffff', background: '#33aaff'}}
-            />
-
-            {JSON.stringify(selectedData) /*Demonstration of CellSelector data*/}
-        </div>
-    );
+      {JSON.stringify(selectedData) /* Demonstration of CellSelector data */}
+    </div>
+  )
   
 }
 ```
