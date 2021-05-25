@@ -88,22 +88,22 @@ If present with no value or set to true, the data cells cannot be edited.
 
 Override cautiously as too high of depth limit can cause the page to go unresponsive for 100K+ rows
 
-###cellHeight: number (default: 25)
+### cellHeight: number (default: 25)
 Height of the data and header cells
 
-###cellFont: string (default: '18px Arial')
+### cellFont: string (default: '18px Arial')
 Must include size and typeset
 
-###rowHeaderStyle: CSSProperties
+### rowHeaderStyle: CSSProperties
 Style the row number column. Avoid using height, width, font, and position.
 
-###columnHeaderStyle: CSSProperties
+### columnHeaderStyle: CSSProperties
 Style the column number row. Avoid using height, width, font, and position.
 
-###cellStyle: CSSProperties
+### cellStyle: CSSProperties
 Style spreadsheet's data cells. Avoid using height, width, font, and position.
-
-###activeCellStyle: CSSProperties
+ 
+### activeCellStyle: CSSProperties
 Style spreadsheet's data cells when hovered or selected. Avoid using height, width, font, and position.
 
 
