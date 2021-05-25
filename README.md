@@ -26,10 +26,6 @@ function Example(props)
   /* Used to demonstrate the CellSelector. Not necessary for operation */
   const [selectedData, setData] = useState([['']])
 
-  fetch('/big_sample.csv')
-    .then(csv => csv.text())
-    .then(txt => setCSV(txt))
-
   const getSelectedData = (coordinate, cells) => {
     /*
      * CellSelector retrieves the row, column or cell selected in a 2-d array
@@ -43,6 +39,10 @@ function Example(props)
     cells[coordinate.row][coordinate.col] = newVal
     setData(CellSelector(coordinate, cells))
   }
+
+  fetch('/big_sample.csv')
+    .then(csv => csv.text())
+    .then(txt => setCSV(txt))
 
   return (
     <div style={{ height: '75vh', width: '95vw' }}>

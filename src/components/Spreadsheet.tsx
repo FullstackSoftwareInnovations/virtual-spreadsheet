@@ -10,7 +10,7 @@ function Spreadsheet(props) {
   const [selectedCell, setCell] = useState(nullCell())
   const [updateCount, setCount] = useState(0)
   const forceRender = () => setCount(updateCount + 1) // Multigrid will only re-render if a non-object prop changes
-  const ref = useRef()
+  const speadsheetRef = useRef()
 
   let resizeHandle;
 
@@ -35,7 +35,8 @@ function Spreadsheet(props) {
     // Call prop updater first so user has access to old and new vals
     props.onCellUpdate && props.onCellUpdate(coordinate, value, cellGrid.cells)
     cellGrid.update(coordinate, value)
-    forceRender()
+    // @ts-ignore (doesn't like that ref.current may be undefined even though I check it isn't)
+    speadsheetRef.current && speadsheetRef.current.recomputeGridSize()
   }
 
   // Returns cell renderer bases on row and col number. Attaches event handlers and style props
@@ -59,7 +60,7 @@ function Spreadsheet(props) {
       <AutoSizer>
         {({ height, width }) => (
           <MultiGrid
-            ref={ref}
+            ref={speadsheetRef}
             cellRenderer={getCellRenderer}
             columnCount={cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1}
             columnWidth={(col) => (col.index === 0) ? 125 : cellGrid.widths[col.index - 1]}
