@@ -6,22 +6,24 @@ import { nullCell } from '../data/Coordinate'
 import { CellGrid } from '../data/CellGrid'
 
 function Spreadsheet(props) {
+  const speadsheetRef = useRef()
   const [cellGrid, setCellGrid] = useState<CellGrid>(new CellGrid())
   const [selectedCell, setCell] = useState(nullCell())
   const [updateCount, setCount] = useState(0)
   const forceRender = () => setCount(updateCount + 1) // Multigrid will only re-render if a non-object prop changes
-  const speadsheetRef = useRef()
-
-  let resizeHandle;
+  const updateSize = () => {
+    // @ts-ignore (doesn't like that ref.current may be undefined even though I check it isn't)
+    speadsheetRef.current && speadsheetRef.current.recomputeGridSize()
+    forceRender()
+  }
 
 
   // Formats the csv and loads it into the cell grid
   useEffect(() => {
-    const font = props.cellFont ?? '14px arial'
-    const cellWidth = props.cellWidth ?? 125
-    cellGrid.loadCSV(props.csv, font, cellWidth)
-    forceRender()
-  }, [props.csv])
+    if (props.cellGrid) setCellGrid(props.cellGrid)
+    else cellGrid.loadCSV(props.csv, props.cellFont, props.cellWidth)
+    updateSize()
+  }, [props.cellGrid, props.csv])
 
   // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
@@ -35,8 +37,7 @@ function Spreadsheet(props) {
     // Call prop updater first so user has access to old and new vals
     props.onCellUpdate && props.onCellUpdate(coordinate, value, cellGrid.cells)
     cellGrid.update(coordinate, value)
-    // @ts-ignore (doesn't like that ref.current may be undefined even though I check it isn't)
-    speadsheetRef.current && speadsheetRef.current.recomputeGridSize()
+    updateSize()
   }
 
   // Returns cell renderer bases on row and col number. Attaches event handlers and style props
@@ -63,7 +64,7 @@ function Spreadsheet(props) {
             ref={speadsheetRef}
             cellRenderer={getCellRenderer}
             columnCount={cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1}
-            columnWidth={(col) => (col.index === 0) ? 125 : cellGrid.widths[col.index - 1]}
+            columnWidth={(col) => cellGrid.widths[col.index]}
             fixedColumnCount={1}
             rowCount={cellGrid.cells.length + 1}
             rowHeight={props.cellHeight ?? 50}
