@@ -30,7 +30,7 @@ const defaultDataCellStyle = {
 
 const defaultActiveCellStyle = {
   color: '#ffffff',
-  background: '#33aaff'
+  background: '#33bbff'
 }
 
 /* UI Representation of cells */

@@ -57,7 +57,7 @@ function Spreadsheet(props) {
 
   // Wrapped in an AutoSizer to take the height/width of the user's container
   return (
-    <div style = {{height:'100%', width:'100%'}}>
+    <div style = {{height: props.height ?? '100%', width: props.width ?? '100%'}}>
       <AutoSizer>
         {({ height, width }) => (
           <MultiGrid
@@ -69,13 +69,14 @@ function Spreadsheet(props) {
             rowCount={cellGrid.cells.length + 1}
             rowHeight={props.cellHeight ?? 50}
             fixedRowCount={1}
-            height={height}
-            width={width}
+            height={height == 0 || isNaN(height) ? 400 : height}
+            width={width == 0 || isNaN(width) ? 900 : width}
             count={updateCount}
           />
         )}
       </AutoSizer>
     </div>
+
 
   )
 }

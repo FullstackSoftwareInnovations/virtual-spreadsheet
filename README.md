@@ -16,7 +16,7 @@ npm install --save virtual-spreadsheet
 import React, { Component } from 'react'
 import {Spreadsheet} from 'virtual-spreadsheet'
 
-function Example(props)
+function SpreadsheetExample () {
   /*
    *  The csv prop passed to spreadsheet should use commas to delimit columns and
    *  newline to delimit rows. (TODO: add custom delimiters)
@@ -45,9 +45,11 @@ function Example(props)
     .then(txt => setCSV(txt))
 
   return (
-    <div style={{ height: '75vh', width: '95vw' }}>
+    <React.Fragment>
       <Spreadsheet
         csv={csv}
+        height='70vh'
+        width='95vw'
 
         notARealProp='You can attach some extra event handlers if needed'
         onCellSelect={getSelectedData}
@@ -66,9 +68,8 @@ function Example(props)
       />
 
       {JSON.stringify(selectedData) /* Demonstration of CellSelector data */}
-    </div>
+    </React.Fragment>
   )
-  
 }
 ```
 
@@ -76,6 +77,12 @@ function Example(props)
 ### csv: string (required)
 Should use commas to delimit columns and newline to delimit rows. 
 Values cannot currently have commas (TODO: add custom delimiters, improve value parsing)
+
+### width: string | number (default: '100%')
+Spreadsheet will dynamically size to its container by default. If the container's size is 0 or undefined, the width will default to 900px
+
+### height: string | number (default: '100%')
+Spreadsheet will dynamically size to its container by default. If the container's size is 0 or undefined, the height will default to 400px
 
 ### onCellSelect: function(coordinate: {row:number, col:number}, cells: (string | number)[ ][ ])
 Called when a cell, row, or column is clicked. You can pass the coordinate and cells to the CellSelector function to get a 2-D array with the selected data
