@@ -5,7 +5,7 @@ import type { Coordinate } from '../data/Coordinate'
 import { nullCell } from '../data/Coordinate'
 import { CellGrid } from '../data/CellGrid'
 
-function Spreadsheet(props) {
+export function Spreadsheet(props) {
   const speadsheetRef = useRef()
   const [cellGrid, setCellGrid] = useState<CellGrid>(new CellGrid())
   const [selectedCell, setCell] = useState(nullCell())
@@ -80,5 +80,3 @@ function Spreadsheet(props) {
 
   )
 }
-
-export default Spreadsheet

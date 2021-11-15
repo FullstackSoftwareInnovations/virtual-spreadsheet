@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { CellMatrix, nullMatrix } from "../data/CellMatrix";
 import { CellGrid } from "../data/CellGrid";
-import Spreadsheet from "./Spreadsheet";
+import { Spreadsheet } from "./Spreadsheet";
 
-export default function Workbook(props){
+export function Workbook(props){
   const [cellMatrix, setCellMatrix] = useState<CellMatrix>(nullMatrix())
   const [selectedGrid, setGrid] = useState(0)
 
