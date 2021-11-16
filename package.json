@@ -39,6 +39,7 @@
     "dist"
   ],
   "dependencies": {
+    "helpful-react-hooks": "^0.1.2",
     "react-virtualized": "^9.22.3"
   }
 }

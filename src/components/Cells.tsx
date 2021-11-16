@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react'
-import { useHover } from '../hooks/useHover'
+import { useHover } from 'helpful-react-hooks'
 import { CellGrid } from '../data/CellGrid'
 import { Coordinate } from '../data/Coordinate'
 
