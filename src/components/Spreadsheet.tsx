@@ -20,8 +20,26 @@ export function Spreadsheet(props) {
 
   // Formats the csv and loads it into the cell grid
   useEffect(() => {
-    if (props.cellGrid) setCellGrid(props.cellGrid)
-    else cellGrid.loadCSV(props.csv, props.cellFont, props.cellWidth)
+    if (props.cellGrid){
+      let toLoad = props.cellGrid
+      if(!props.firstRowHeaders){
+        let headers = props.cellGrid[0].map( (_col: string| number, index: number) => index+1 )
+        toLoad.cells.unshift(headers)
+      }
+      setCellGrid(toLoad)
+    }
+
+
+    else {
+      let toLoad = props.csv
+      if(!props.firstRowHeaders){
+        let firstRow = props.csv.substring(0, props.csv.indexOf('\n'))
+        let headers = firstRow.split(',').map( (_col: string| number, index: number) => index+1 )
+        toLoad = headers.join(',') + '\n' + props.csv
+      }
+      console.log(toLoad)
+      cellGrid.loadCSV(toLoad, props.cellFont, props.cellWidth)
+    }
     updateSize()
   }, [props.cellGrid, props.csv])
 
@@ -48,7 +66,7 @@ export function Spreadsheet(props) {
       handleClick,
       updateCell,
       columnIndex - 1, // -1 so my colNum headers don't mess with coordinate calculations
-      rowIndex - 1,    // -1 so my rowNum headers don't mess with coordinate calculations
+      rowIndex,
       key,
       style,
       props
@@ -66,7 +84,7 @@ export function Spreadsheet(props) {
             columnCount={cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1}
             columnWidth={(col) => cellGrid.widths[col.index]}
             fixedColumnCount={1}
-            rowCount={cellGrid.cells.length + 1}
+            rowCount={cellGrid.cells.length}
             rowHeight={props.cellHeight ?? 50}
             fixedRowCount={1}
             height={height == 0 || isNaN(height) ? 400 : height}

@@ -61,7 +61,7 @@ export function ColumnHeaderCell(props) {
 
   return (
     <div style={style} onClick={props.onClick}>
-      {props.colNumber}
+      {props.title}
     </div>
   )
 }
@@ -114,23 +114,23 @@ export function CellRenderer(
   props
 ) {
   const handleClick = () => clickHandler({ row: row, col: col, val: '' })
-
+  console.log(cellGrid)
   if (col === -1) {
     return (
       <RowHeaderCell
         key={key}
         style={style}
-        rowNumber={row === -1 ? '' : row + 1} // +1 because row indices should start at 1, not 0
+        rowNumber={row === 0 ? '' : row}
         onClick={handleClick}
         {...props}
       />
     )
-  } else if (row === -1) {
+  } else if (row === 0) {
     return (
       <ColumnHeaderCell
         key={key}
         style={style}
-        colNumber={col + 1} // +1 because col indices should start at 1, not 0
+        title = {cellGrid.cells[row][col]}
         onClick={handleClick}
         {...props}
       />
@@ -144,7 +144,7 @@ export function CellRenderer(
   const isSelected =
     (selectedCell.row === row && selectedCell.col === col) ||
     (selectedCell.row === row && selectedCell.col === -1) ||
-    (selectedCell.row === -1 && selectedCell.col === col)
+    (selectedCell.row === 0 && selectedCell.col === col)
 
   return (
     <DataCell
@@ -161,8 +161,8 @@ export function CellRenderer(
 
 // Gets the data from the selected grid, row, column, or single-cell
 export function CellSelector(coordinate:Coordinate, cellGrid: (string | number)[][]){
-  if (coordinate.row === -1 && coordinate.col === -1 ) return cellGrid
-  else if (coordinate.row !== -1 && coordinate.col!== -1 ) return [[cellGrid[coordinate.row][coordinate.col]]]
+  if (coordinate.row === 0 && coordinate.col === -1 ) return cellGrid
+  else if (coordinate.row !== 0 && coordinate.col!== -1 ) return [[cellGrid[coordinate.row][coordinate.col]]]
   else if (coordinate.col=== -1) return [cellGrid[coordinate.row]]
   else return cellGrid.map(row => [row[coordinate.col]])
 

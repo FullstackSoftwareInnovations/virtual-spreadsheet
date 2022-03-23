@@ -75,8 +75,11 @@ function SpreadsheetExample () {
 
 # Props
 ### csv: string (required)
-Should use commas to delimit columns and newline to delimit rows. 
+Should use commas to delimit columns and newline to delimit rows.
 Values cannot currently have commas (TODO: add custom delimiters, improve value parsing)
+
+### firstRowHeaders: boolean (optional)
+If true, the first row will be used as column headers instead of data
 
 ### width: string | number (default: '100%')
 Spreadsheet will dynamically size to its container by default. If the container's size is 0 or undefined, the width will default to 900px
@@ -88,15 +91,15 @@ Spreadsheet will dynamically size to its container by default. If the container'
 Called when a cell, row, or column is clicked. You can pass the coordinate and cells to the CellSelector function to get a 2-D array with the selected data
 
 ### onCellUpdate: function(coordinate: {row:number, col:number}, newValue: string, cells: (string | number)[ ][ ])
-Called when a cell value is changed. You can do any state updates you need in this method 
-		
+Called when a cell value is changed. You can do any state updates you need in this method
+
 ### readOnly: optional | boolean (default: false)
 If present with no value or set to true, the data cells cannot be edited.
 
 ### cellWidth: number, 'auto', 'auto-deep', 'auto-${number}' (default: 'auto')
 'auto' calculates the width required for the each column. Limited to 1000 rows by default.
-'auto-' followed by a number overrides the depth limit for the width calculation(e.g. 'auto-5000'). 
-'auto-deep' will use every row in its width calculation. 
+'auto-' followed by a number overrides the depth limit for the width calculation(e.g. 'auto-5000').
+'auto-deep' will use every row in its width calculation.
 
 Override cautiously as too high of depth limit can cause the page to go unresponsive for 100K+ rows
 
@@ -114,7 +117,7 @@ Style the column number row. Avoid using height, width, font, and position.
 
 ### cellStyle: CSSProperties
 Style spreadsheet's data cells. Avoid using height, width, font, and position.
- 
+
 ### activeCellStyle: CSSProperties
 Style spreadsheet's data cells when hovered or selected. Avoid using height, width, font, and position.
 
