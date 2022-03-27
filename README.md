@@ -1,13 +1,13 @@
 # virtual-spreadsheet
 
-> A lightweight, virtualized spreadsheet capable of supporting 100k+ lines of input.
+> A lightweight, virtualized spreadsheet capable of rendering millions of cells of data.
 
 [![NPM](https://img.shields.io/npm/v/virtual-spreadsheet.svg)](https://www.npmjs.com/package/virtual-spreadsheet) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 # Install
 
 ```bash
-npm install --save virtual-spreadsheet
+npm install virtual-spreadsheet
 ```
 
 # Usage
@@ -83,6 +83,16 @@ A 2-d array of values to be entered into the table
 
 ### firstRowHeaders: boolean (optional)
 If true, the first row will be used as column headers instead of data
+
+### draggableColumns: boolean (default: false)
+If true, the column headers can be dragged to re-order them
+
+### fixedColumnCount: number (default: 1)
+The number of left-side columns that will remain visible when horizontally scrolling
+
+### fixedRowCount: number (default: 1)
+The number of top-side rows that will remain visible when vertically scrolling
+
 
 ### width: string | number (default: '100%')
 Spreadsheet will dynamically size to its container by default. If the container's size is 0 or undefined, the width will default to 900px
