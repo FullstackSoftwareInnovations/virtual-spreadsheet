@@ -28,7 +28,7 @@ export function Spreadsheet(props) {
         let headers = props.cells[0].map( (_col: string| number, index: number) => index+1 )
         toLoad.unshift(headers)
       }
-      cellGrid.loadCells(toLoad, props.cellFont, props.cellWidth)
+      cellGrid.loadCells(toLoad, props.sortableColumns, props.cellFont, props.cellWidth)
     }
 
     else {
@@ -38,7 +38,7 @@ export function Spreadsheet(props) {
         let headers = firstRow.split(',').map( (_col: string| number, index: number) => index+1 )
         toLoad = headers.join(',') + '\n' + props.csv
       }
-      cellGrid.loadCSV(toLoad, props.cellFont, props.cellWidth)
+      cellGrid.loadCSV(toLoad, props.sortableColumns, props.cellFont, props.cellWidth)
     }
     updateSize()
   }, [props.cells, props.csv])
@@ -65,23 +65,7 @@ export function Spreadsheet(props) {
             setSort('reverse')
             break
           default:
-            if (props.cells){
-              let toLoad = [...props.cells]
-              if(!props.firstRowHeaders){
-                let headers = cellGrid.cells[0]
-                toLoad.unshift(headers)
-              }
-              cellGrid.setCells(toLoad)
-            }
-
-            else {
-              let toLoad = (' ' + props.csv).slice(1);
-              if(!props.firstRowHeaders){
-                let headers = cellGrid.cells[0]
-                toLoad = headers.join(',') + '\n' + toLoad
-              }
-              cellGrid.setCSV(toLoad)
-            }
+            cellGrid.sortColumn(virtCol, 'default')
             setSort('default')
 
         }

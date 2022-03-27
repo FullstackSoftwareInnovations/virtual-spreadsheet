@@ -2,6 +2,8 @@ import { Coordinate } from './Coordinate'
 
 export class CellGrid {
   cells: (string | number)[][]
+  sortable: boolean
+  unsorted: (string | number)[][]
   widths: number[]
   cellBaseWidth: number
   font: string
@@ -14,15 +16,16 @@ export class CellGrid {
 
   update(cell: Coordinate, value: string) {
     this.cells[cell.row][cell.col] = value
+    if (this.sortable) this.unsorted[cell.row][cell.col] = value
     this.adjustColumnWidth(true, cell.col, value)
   }
 
-  loadCSV(csv:string, font = '14px arial', cellWidth: number | string = 'auto'){
+  loadCSV(csv:string, sortable = false, font = '14px arial', cellWidth: number | string = 'auto'){
     let rows = csv.split('\n').map(row => row.split(','))
-    this.loadCells(rows, font, cellWidth)
+    this.loadCells(rows, sortable, font, cellWidth)
   }
 
-  loadCells(cells: string[][],  font = '14px arial', cellWidth: number | string = 'auto'){
+  loadCells(cells: string[][], sortable= false,  font = '14px arial', cellWidth: number | string = 'auto'){
     const autoWidthDepth: number = this.getAutoWidthMaxDepth(cellWidth)
     const autoWidthEnabled: boolean = this.autoWidthEnabled(cellWidth)
     this.font = font
@@ -40,6 +43,9 @@ export class CellGrid {
         else return value
       })
     })
+
+    this.sortable = sortable
+    if (sortable) this.unsorted = [...cells]
 
   }
 
@@ -71,21 +77,27 @@ export class CellGrid {
         let val1 = row1[colNumber]
         let val2 = row2[colNumber]
 
-        if (typeof val1 === "number"){
+        if (!Number.isNaN(val1) ){
           //@ts-ignore
           return val1-val2
         }
 
         return val1.toString().localeCompare(val2.toString())
       })
+
+      this.cells.unshift(headers)
     }
 
-    if (sortOrder === 'reverse'){
+    else if (sortOrder === 'reverse'){
       this.cells = this.cells.reverse()
+      this.cells.unshift(headers)
     }
 
-    console.log()
-    this.cells.unshift(headers)
+    else {
+      this.cells = [...this.unsorted]
+    }
+
+
   }
 
 
