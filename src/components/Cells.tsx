@@ -59,26 +59,35 @@ export function ColumnHeaderCell(props) {
     font: props.cellFont ?? defaultFont
   }
 
-  const onDragStart = (event) => {
-    event.dataTransfer.setData("drag-item", props.colNumber);
-  }
-
-  const onDragOver = (event) => {
-    event.preventDefault()
-  }
-  const onDrop = (event) => {
-    const droppedItem = event.dataTransfer.getData("drag-item");
-    if (droppedItem) {
-      props.onMove(droppedItem, props.colNumber)
+  if (props.draggable) {
+    const onDragStart = (event) => {
+      event.dataTransfer.setData("drag-item", props.colNumber);
     }
+
+    const onDragOver = (event) => {
+      event.preventDefault()
+    }
+    const onDrop = (event) => {
+      const droppedItem = event.dataTransfer.getData("drag-item");
+      if (droppedItem) {
+        props.onMove(droppedItem, props.colNumber)
+      }
+    }
+    return (
+      <div draggable
+           onDragStart={onDragStart}
+           onDragOver={onDragOver}
+           onDrop={onDrop}
+           style={style}
+           onClick={props.onClick}>
+        {props.title}
+      </div>
+    )
   }
 
-  return (
-    <div draggable
-         onDragStart={onDragStart}
-         onDragOver={onDragOver}
-         onDrop={onDrop}
-         style={style}
+
+ else return (
+    <div style={style}
          onClick={props.onClick}>
       {props.title}
     </div>
@@ -127,6 +136,7 @@ export function CellRenderer(
   cellGrid: CellGrid,
   selectedCell: Coordinate,
   clickHandler,
+  draggableColumns,
   onMoveColumn,
   updateCell,
   realCol,
@@ -152,6 +162,7 @@ export function CellRenderer(
       <ColumnHeaderCell
         key={key}
         style={style}
+        draggable = {draggableColumns}
         colNumber={realCol}
         title = {cellGrid.getCell(row,realCol)}
         onClick={handleClick}

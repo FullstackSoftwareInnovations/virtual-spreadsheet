@@ -60,7 +60,7 @@ export function Spreadsheet(props) {
     updateSize()
   }
 
-  const handleMoveColumn = (o,n ) => {
+  const handleColumnDrag = (o,n ) => {
     cellGrid.moveColumn(o, n)
     updateSize()
   }
@@ -73,7 +73,8 @@ export function Spreadsheet(props) {
       cellGrid,
       selectedCell,
       handleClick,
-      handleMoveColumn,
+      props.draggableColumns,
+      handleColumnDrag,
       updateCell,
       columnIndex, // -1 so my colNum headers don't mess with coordinate calculations
       rowIndex,
