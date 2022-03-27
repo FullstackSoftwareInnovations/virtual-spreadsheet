@@ -81,10 +81,10 @@ export function Spreadsheet(props) {
             cellRenderer={getCellRenderer}
             columnCount={cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1}
             columnWidth={(col) => cellGrid.widths[col.index]}
-            fixedColumnCount={1}
+            fixedColumnCount={props.fixedColumnCount ?? 1}
             rowCount={cellGrid.cells.length}
             rowHeight={props.cellHeight ?? 50}
-            fixedRowCount={1}
+            fixedRowCount={props.fixedRowCount ?? 1}
             height={height == 0 || isNaN(height) ? 400 : height}
             width={width == 0 || isNaN(width) ? 900 : width}
             count={updateCount}
