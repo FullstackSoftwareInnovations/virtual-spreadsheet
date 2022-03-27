@@ -174,7 +174,7 @@ export function CellRenderer(
     )
   }
 
-  const cell: Coordinate = { row: row, col: col }
+  const cell: Coordinate = { row: row, col: realCol }
   const updater = (e: ChangeEvent<HTMLInputElement>) => {
     updateCell(e.target.value, cell)
   }

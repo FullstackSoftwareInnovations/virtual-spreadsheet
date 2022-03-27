@@ -100,12 +100,12 @@ export function Spreadsheet(props) {
   // Updates the cell value and resizes the grid if necessary
   const updateCell = (value, coordinate: Coordinate) => {
     // Call prop updater first so user has access to old and new vals
-    coordinate.col = cellGrid.virtualColumnIndices[coordinate.col]
+    coordinate.col = cellGrid.virtualColumnIndices[coordinate.col] - 1 // -1 to account for not-real row headers
     props.onCellUpdate && props.onCellUpdate(coordinate, value, cellGrid.cells)
     cellGrid.update(coordinate, value)
     updateSize()
   }
-  
+
 
   const handleColumnDrag = (o,n ) => {
     cellGrid.moveColumn(o, n)
