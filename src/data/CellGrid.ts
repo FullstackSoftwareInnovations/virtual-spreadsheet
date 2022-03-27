@@ -17,13 +17,16 @@ export class CellGrid {
   }
 
   loadCSV(csv:string, font = '14px arial', cellWidth: number | string = 'auto'){
-    this.font = font
+    let rows = csv.split('\n').map(row => row.split(','))
+    this.loadCells(rows, font, cellWidth)
+  }
+
+  loadCells(cells: string[][],  font = '14px arial', cellWidth: number | string = 'auto'){
     const autoWidthDepth: number = this.getAutoWidthMaxDepth(cellWidth)
     const autoWidthEnabled: boolean = this.autoWidthEnabled(cellWidth)
-    const rows = csv.split('\n')
-
-    this.cells = rows.map((row, rowIndex) => {
-      return row.split(',').map((value, colIndex) => {
+    this.font = font
+    this.cells = cells.map((row, rowIndex) => {
+      return row.map((value, colIndex) => {
         let autoCalc = autoWidthEnabled && (cellWidth === 'auto-deep' || rowIndex < autoWidthDepth)
         this.adjustColumnWidth(autoCalc, colIndex, value)
 

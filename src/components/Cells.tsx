@@ -114,7 +114,6 @@ export function CellRenderer(
   props
 ) {
   const handleClick = () => clickHandler({ row: row, col: col, val: '' })
-  console.log(cellGrid)
   if (col === -1) {
     return (
       <RowHeaderCell

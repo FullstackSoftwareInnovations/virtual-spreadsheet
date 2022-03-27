@@ -74,9 +74,12 @@ function SpreadsheetExample () {
 ```
 
 # Props
-### csv: string (required)
+### csv: string (one of: [csv, cells] is required)
 Should use commas to delimit columns and newline to delimit rows.
 Values cannot currently have commas (TODO: add custom delimiters, improve value parsing)
+
+### cells: (string | number)[ ][ ] (one of: [csv, cells] is required)
+A 2-d array of values to be entered into the table
 
 ### firstRowHeaders: boolean (optional)
 If true, the first row will be used as column headers instead of data

@@ -20,15 +20,14 @@ export function Spreadsheet(props) {
 
   // Formats the csv and loads it into the cell grid
   useEffect(() => {
-    if (props.cellGrid){
-      let toLoad = props.cellGrid
+    if (props.cells){
+      let toLoad = props.cells
       if(!props.firstRowHeaders){
-        let headers = props.cellGrid[0].map( (_col: string| number, index: number) => index+1 )
-        toLoad.cells.unshift(headers)
+        let headers = props.cells[0].map( (_col: string| number, index: number) => index+1 )
+        toLoad.unshift(headers)
       }
-      setCellGrid(toLoad)
+      cellGrid.loadCells(toLoad, props.cellFont, props.cellWidth)
     }
-
 
     else {
       let toLoad = props.csv
@@ -37,11 +36,10 @@ export function Spreadsheet(props) {
         let headers = firstRow.split(',').map( (_col: string| number, index: number) => index+1 )
         toLoad = headers.join(',') + '\n' + props.csv
       }
-      console.log(toLoad)
       cellGrid.loadCSV(toLoad, props.cellFont, props.cellWidth)
     }
     updateSize()
-  }, [props.cellGrid, props.csv])
+  }, [props.cells, props.csv])
 
   // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
