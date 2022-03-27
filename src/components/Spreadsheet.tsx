@@ -10,7 +10,9 @@ export function Spreadsheet(props) {
   const [cellGrid, setCellGrid] = useState<CellGrid>(new CellGrid())
   const [selectedCell, setCell] = useState(nullCell())
   const [updateCount, setCount] = useState(0)
-  const forceRender = () => setCount(updateCount + 1) // Multigrid will only re-render if a non-object prop changes
+
+  //@ts-ignore
+  const forceRender = () => speadsheetRef.current && speadsheetRef.current.forceUpdateGrids()
   const updateSize = () => {
     // @ts-ignore (doesn't like that ref.current may be undefined even though I check it isn't)
     speadsheetRef.current && speadsheetRef.current.recomputeGridSize()
@@ -43,6 +45,7 @@ export function Spreadsheet(props) {
 
   // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
+    clicked.col = cellGrid.virtualColumnIndices[clicked.col]
     setCell(clicked)
     props.onCellSelect && props.onCellSelect(clicked, cellGrid.cells)
     forceRender()
@@ -51,10 +54,18 @@ export function Spreadsheet(props) {
   // Updates the cell value and resizes the grid if necessary
   const updateCell = (value, coordinate: Coordinate) => {
     // Call prop updater first so user has access to old and new vals
+    coordinate.col = cellGrid.virtualColumnIndices[coordinate.col]
     props.onCellUpdate && props.onCellUpdate(coordinate, value, cellGrid.cells)
     cellGrid.update(coordinate, value)
     updateSize()
   }
+
+  const handleMoveColumn = (o,n ) => {
+    cellGrid.moveColumn(o, n)
+    updateSize()
+  }
+
+
 
   // Returns cell renderer bases on row and col number. Attaches event handlers and style props
   const getCellRenderer = ({ columnIndex, key, rowIndex, style }) => {
@@ -62,8 +73,9 @@ export function Spreadsheet(props) {
       cellGrid,
       selectedCell,
       handleClick,
+      handleMoveColumn,
       updateCell,
-      columnIndex - 1, // -1 so my colNum headers don't mess with coordinate calculations
+      columnIndex, // -1 so my colNum headers don't mess with coordinate calculations
       rowIndex,
       key,
       style,

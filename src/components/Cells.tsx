@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react'
+import React, {ChangeEvent, useState} from 'react'
 import { useHover } from 'helpful-react-hooks'
 import { CellGrid } from '../data/CellGrid'
 import { Coordinate } from '../data/Coordinate'
@@ -59,8 +59,27 @@ export function ColumnHeaderCell(props) {
     font: props.cellFont ?? defaultFont
   }
 
+  const onDragStart = (event) => {
+    event.dataTransfer.setData("drag-item", props.colNumber);
+  }
+
+  const onDragOver = (event) => {
+    event.preventDefault()
+  }
+  const onDrop = (event) => {
+    const droppedItem = event.dataTransfer.getData("drag-item");
+    if (droppedItem) {
+      props.onMove(droppedItem, props.colNumber)
+    }
+  }
+
   return (
-    <div style={style} onClick={props.onClick}>
+    <div draggable
+         onDragStart={onDragStart}
+         onDragOver={onDragOver}
+         onDrop={onDrop}
+         style={style}
+         onClick={props.onClick}>
       {props.title}
     </div>
   )
@@ -88,13 +107,15 @@ export function DataCell(props) {
 
   const handleClick = props.onClick ? props.onClick : () => {}
 
+  const data =  props.data === '' ? ' ' : props.data
+
   return (
     <div onClick={handleClick}>
       <input
         ref={ref}
         style={style}
         onChange={props.update}
-        value={props.data}
+        value={data}
         disabled={props.readOnly}
       />
     </div>
@@ -106,15 +127,17 @@ export function CellRenderer(
   cellGrid: CellGrid,
   selectedCell: Coordinate,
   clickHandler,
+  onMoveColumn,
   updateCell,
-  col,
+  realCol,
   row,
   key,
   style,
   props
 ) {
+  let col = cellGrid.virtualColumnIndices[realCol]
   const handleClick = () => clickHandler({ row: row, col: col, val: '' })
-  if (col === -1) {
+  if (col === 0) {
     return (
       <RowHeaderCell
         key={key}
@@ -129,8 +152,10 @@ export function CellRenderer(
       <ColumnHeaderCell
         key={key}
         style={style}
-        title = {cellGrid.cells[row][col]}
+        colNumber={realCol}
+        title = {cellGrid.getCell(row,realCol)}
         onClick={handleClick}
+        onMove = {onMoveColumn}
         {...props}
       />
     )
@@ -142,14 +167,14 @@ export function CellRenderer(
   }
   const isSelected =
     (selectedCell.row === row && selectedCell.col === col) ||
-    (selectedCell.row === row && selectedCell.col === -1) ||
+    (selectedCell.row === row && selectedCell.col === 0) ||
     (selectedCell.row === 0 && selectedCell.col === col)
 
   return (
     <DataCell
       key={key}
       style={style}
-      data={cellGrid.cells[row][col]}
+      data={cellGrid.getCell(row,realCol)}
       isSelected={isSelected}
       onClick={handleClick}
       update={updater}

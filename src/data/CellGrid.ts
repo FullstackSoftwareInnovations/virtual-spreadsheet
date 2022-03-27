@@ -5,6 +5,7 @@ export class CellGrid {
   widths: number[]
   cellBaseWidth: number
   font: string
+  virtualColumnIndices: number [] //allows to "move" the data without actually moving it in the grid
 
   constructor() {
     this.cells = [[]]
@@ -25,6 +26,7 @@ export class CellGrid {
     const autoWidthDepth: number = this.getAutoWidthMaxDepth(cellWidth)
     const autoWidthEnabled: boolean = this.autoWidthEnabled(cellWidth)
     this.font = font
+    this.virtualColumnIndices = cells[0].map((_ignored, index) => index)
     this.cells = cells.map((row, rowIndex) => {
       return row.map((value, colIndex) => {
         let autoCalc = autoWidthEnabled && (cellWidth === 'auto-deep' || rowIndex < autoWidthDepth)
@@ -37,6 +39,15 @@ export class CellGrid {
         else return value
       })
     })
+
+  }
+
+  getCell(row: number, column: number){
+    return this.cells[row][this.virtualColumnIndices[column]-1]
+  }
+
+  moveColumn(oldIndex: any, newIndex: any){
+    this.virtualColumnIndices.splice(newIndex,0,this.virtualColumnIndices.splice(oldIndex,1)[0])
   }
 
   autoWidthEnabled(cellWidth){
