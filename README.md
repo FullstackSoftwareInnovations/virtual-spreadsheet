@@ -87,6 +87,11 @@ If true, the first row will be used as column headers instead of data
 ### draggableColumns: boolean (default: false)
 If true, the column headers can be dragged to re-order them
 
+### sortableColumns boolean (default: false)
+If true, the columns will be sorted when they are clicked while already selected.
+They will first be sorted in normal (alphabetical or numerical order), then reverse,
+then back to its default order.
+
 ### fixedColumnCount: number (default: 1)
 The number of left-side columns that will remain visible when horizontally scrolling
 

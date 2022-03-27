@@ -43,6 +43,15 @@ export class CellGrid {
 
   }
 
+  setCSV(csv:string){
+    let rows = csv.split('\n').map(row => row.split(','))
+    this.setCells(rows)
+  }
+
+  setCells(newCells: string[][]){
+    this.cells = newCells
+  }
+
   getCell(row: number, column: number){
     column = this.virtualColumnIndices[column]-1
     return this.cells[row][column]
@@ -50,7 +59,35 @@ export class CellGrid {
 
   moveColumn(oldIndex: any, newIndex: any){
     this.virtualColumnIndices.splice(newIndex,0,this.virtualColumnIndices.splice(oldIndex,1)[0])
+    this.widths.splice(newIndex,0,this.widths.splice(oldIndex,1)[0])
   }
+
+  sortColumn(colNumber: number, sortOrder: string){
+    colNumber = colNumber -1 //the row headers don't really exist
+    let headers = this.cells.splice(0,1)[0]
+
+    if (sortOrder === 'normal'){
+      this.cells.sort((row1, row2) => {
+        let val1 = row1[colNumber]
+        let val2 = row2[colNumber]
+
+        if (typeof val1 === "number"){
+          //@ts-ignore
+          return val1-val2
+        }
+
+        return val1.toString().localeCompare(val2.toString())
+      })
+    }
+
+    if (sortOrder === 'reverse'){
+      this.cells = this.cells.reverse()
+    }
+
+    console.log()
+    this.cells.unshift(headers)
+  }
+
 
   autoWidthEnabled(cellWidth){
     if( typeof cellWidth === 'string' && cellWidth.startsWith('auto')){

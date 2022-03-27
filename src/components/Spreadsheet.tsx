@@ -2,13 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { CellRenderer } from './Cells'
 import { MultiGrid, AutoSizer } from 'react-virtualized'
 import type { Coordinate } from '../data/Coordinate'
-import { nullCell } from '../data/Coordinate'
+import {compareCoordinates, nullCoordinate} from '../data/Coordinate'
 import { CellGrid } from '../data/CellGrid'
 
 export function Spreadsheet(props) {
   const speadsheetRef = useRef()
   const [cellGrid, setCellGrid] = useState<CellGrid>(new CellGrid())
-  const [selectedCell, setCell] = useState(nullCell())
+  const [selectedCell, setCell] = useState(nullCoordinate())
   const [updateCount, setCount] = useState(0)
 
   //@ts-ignore
@@ -23,7 +23,7 @@ export function Spreadsheet(props) {
   // Formats the csv and loads it into the cell grid
   useEffect(() => {
     if (props.cells){
-      let toLoad = props.cells
+      let toLoad = [...props.cells]
       if(!props.firstRowHeaders){
         let headers = props.cells[0].map( (_col: string| number, index: number) => index+1 )
         toLoad.unshift(headers)
@@ -43,11 +43,57 @@ export function Spreadsheet(props) {
     updateSize()
   }, [props.cells, props.csv])
 
+
+  const [sortOrder, setSort] = useState('default')
+
   // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
-    clicked.col = cellGrid.virtualColumnIndices[clicked.col]
-    setCell(clicked)
-    props.onCellSelect && props.onCellSelect(clicked, cellGrid.cells)
+    let virtCol = cellGrid.virtualColumnIndices[clicked.col]
+    console.log(clicked.col + ' ' + virtCol)
+    // If cell has already been clicked...
+    if (compareCoordinates(selectedCell, clicked) === 0) {
+
+      //... and they've clicked a column header with sortableColumns enabled
+      if(selectedCell.row === 0 && props.sortableColumns){
+        switch(sortOrder){
+          case 'default':
+            cellGrid.sortColumn(virtCol, 'normal')
+            setSort('normal')
+            break
+          case 'normal':
+            cellGrid.sortColumn(virtCol, 'reverse')
+            setSort('reverse')
+            break
+          default:
+            if (props.cells){
+              let toLoad = [...props.cells]
+              if(!props.firstRowHeaders){
+                let headers = cellGrid.cells[0]
+                toLoad.unshift(headers)
+              }
+              cellGrid.setCells(toLoad)
+            }
+
+            else {
+              let toLoad = (' ' + props.csv).slice(1);
+              if(!props.firstRowHeaders){
+                let headers = cellGrid.cells[0]
+                toLoad = headers.join(',') + '\n' + toLoad
+              }
+              cellGrid.setCSV(toLoad)
+            }
+            setSort('default')
+
+        }
+
+      }
+
+    }
+    else{
+      setCell(clicked)
+      props.onCellSelect && props.onCellSelect(clicked, cellGrid.cells)
+    }
+
     forceRender()
   }
 
@@ -59,6 +105,7 @@ export function Spreadsheet(props) {
     cellGrid.update(coordinate, value)
     updateSize()
   }
+  
 
   const handleColumnDrag = (o,n ) => {
     cellGrid.moveColumn(o, n)

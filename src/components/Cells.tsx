@@ -146,7 +146,8 @@ export function CellRenderer(
   props
 ) {
   let col = cellGrid.virtualColumnIndices[realCol]
-  const handleClick = () => clickHandler({ row: row, col: col, val: '' })
+
+  const handleClick = () => clickHandler({ row: row, col: realCol, val: '' })
   if (col === 0) {
     return (
       <RowHeaderCell
@@ -164,6 +165,7 @@ export function CellRenderer(
         style={style}
         draggable = {draggableColumns}
         colNumber={realCol}
+        virtCol = {col}
         title = {cellGrid.getCell(row,realCol)}
         onClick={handleClick}
         onMove = {onMoveColumn}
@@ -176,10 +178,11 @@ export function CellRenderer(
   const updater = (e: ChangeEvent<HTMLInputElement>) => {
     updateCell(e.target.value, cell)
   }
+
   const isSelected =
-    (selectedCell.row === row && selectedCell.col === col) ||
+    (selectedCell.row === row && selectedCell.col === realCol) ||
     (selectedCell.row === row && selectedCell.col === 0) ||
-    (selectedCell.row === 0 && selectedCell.col === col)
+    (selectedCell.row === 0 && selectedCell.col === realCol)
 
   return (
     <DataCell
