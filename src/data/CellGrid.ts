@@ -27,6 +27,7 @@ export class CellGrid {
     const autoWidthEnabled: boolean = this.autoWidthEnabled(cellWidth)
     this.font = font
     this.virtualColumnIndices = cells[0].map((_ignored, index) => index)
+    this.virtualColumnIndices.push(cells[0].length) // add column to account for row headers
     this.cells = cells.map((row, rowIndex) => {
       return row.map((value, colIndex) => {
         let autoCalc = autoWidthEnabled && (cellWidth === 'auto-deep' || rowIndex < autoWidthDepth)
@@ -43,7 +44,8 @@ export class CellGrid {
   }
 
   getCell(row: number, column: number){
-    return this.cells[row][this.virtualColumnIndices[column]-1]
+    column = this.virtualColumnIndices[column]-1
+    return this.cells[row][column]
   }
 
   moveColumn(oldIndex: any, newIndex: any){
