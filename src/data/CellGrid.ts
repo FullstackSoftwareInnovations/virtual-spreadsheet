@@ -4,6 +4,7 @@ export class CellGrid {
   cells: (string | number)[][]
   sortable: boolean
   unsorted: (string | number)[][]
+  filter: Function = () => true
   widths: number[]
   cellBaseWidth: number
   font: string
@@ -51,13 +52,14 @@ export class CellGrid {
     if (sortable) this.unsorted = [...cells]
   }
 
-  filterRows(predicate: any){
+  filterRows(predicate: Function){
     let headers = this.unsorted.splice(0,1)[0]
     let virtualHeadersWithoutRowHeader = this.virtualColumnIndices.map((index)=> index -1)
     virtualHeadersWithoutRowHeader.splice(0,1)
     this.cells = this.unsorted.filter((row, rowIndex) => predicate(row, rowIndex, virtualHeadersWithoutRowHeader))
     this.cells.unshift(headers)
     this.unsorted.unshift(headers)
+    this.filter = predicate
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
 
@@ -118,7 +120,7 @@ export class CellGrid {
     }
 
     else {
-      this.cells = [...this.unsorted]
+      this.filterRows(this.filter)
     }
 
 
