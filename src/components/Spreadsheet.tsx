@@ -73,7 +73,7 @@ export function Spreadsheet(props) {
       if(selectedCell.row === 0 && props.sortableColumns){
         switch(sortOrder){
           case 'default':
-            cellGrid.sortColumn(virtCol, 'normal')
+            cellGrid.sortColumn(virtCol, 'normal', props.sortFunction)
             setSort('normal')
             break
           case 'normal':

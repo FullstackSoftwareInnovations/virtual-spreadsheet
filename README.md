@@ -84,10 +84,10 @@ A 2-d array of values to be entered into the table
 ### firstRowHeaders: boolean (optional)
 If true, the first row will be used as column headers instead of data
 
-### rowFilter = function(row, rowIndex, columnIndices) => predicate()
-Applied to rows in the table. Will filter out the row if predicate returns false
-If using the draggableColumns prop, use the columnIndices[targetIndex] to index the row inside of your
-predicate. This will ensure the correct column is used in the filter criteria if user has moved the columns.
+### rowFilter = function(row, rowIndex, columnIndices) => boolean
+Applied to rows in the table. Will filter out the row if boolean is false.
+If using the draggableColumns prop, use the index = columnIndices[UIColIndex] to index the row inside of your
+rowFilter function. This will ensure the correct column is used in the filter criteria if user has moved the columns.
 
 ### draggableColumns: boolean (default: false)
 If true, the column headers can be dragged to re-order them
@@ -95,7 +95,11 @@ If true, the column headers can be dragged to re-order them
 ### sortableColumns boolean (default: false)
 If true, the columns will be sorted when they are clicked while already selected.
 They will first be sorted in normal (alphabetical or numerical order), then reverse,
-then back to its default order.
+then back to its default order. You can override the 'normal' sort function with
+the sortFunction prop.
+
+### sortFunction: (val1, val2) => number
+Will be used as the 'normal' sort for your columns (if sortableColumns is enabled).
 
 ### fixedColumnCount: number (default: 1)
 The number of left-side columns that will remain visible when horizontally scrolling

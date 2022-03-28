@@ -88,33 +88,12 @@ export class CellGrid {
     this.widths.splice(newIndex,0,this.widths.splice(oldIndex,1)[0])
   }
 
-  sortColumn(colNumber: number, sortOrder: string){
+  sortColumn(colNumber: number, sortOrder: string, normalSort: Function = this.defaultSort){
     colNumber = colNumber -1 //the row headers don't really exist
     let headers = this.cells.splice(0,1)[0]
 
     if (sortOrder === 'normal'){
-      this.cells.sort((row1, row2) => {
-        let val1 = row1[colNumber]
-        let val2 = row2[colNumber]
-
-        //@ts-ignore compare as numbers if they are
-        if(!isNaN(val1) && !isNaN(val2) ){
-          //@ts-ignore
-          return val1-val2
-        }
-        else{
-          let str1 = val1 + ''
-          let str2 = val2 + ''
-
-          //put empty strings at the bottom on normal sort
-          if(str1.trim() === '') return 1
-          if(str2.trim() === '') return -1
-          return str1.trim().localeCompare(str2.trim())
-        }
-
-
-      })
-
+      this.cells.sort((row1, row2) => normalSort(row1[colNumber], row2[colNumber]))
       this.cells.unshift(headers)
     }
 
@@ -127,6 +106,23 @@ export class CellGrid {
       this.filterRows(this.filter)
     }
 
+  }
+
+  defaultSort(val1: (string | number), val2: (string | number) ): number{
+      //@ts-ignore compare as numbers if they are
+      if(!isNaN(val1) && !isNaN(val2) ){
+        //@ts-ignore
+        return val1-val2
+      }
+      else{
+        let str1 = val1 + ''
+        let str2 = val2 + ''
+
+        //put empty strings at the bottom on normal sort
+        if(str1.trim() === '') return 1
+        if(str2.trim() === '') return -1
+        return str1.trim().localeCompare(str2.trim())
+      }
 
   }
 
