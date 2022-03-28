@@ -43,7 +43,7 @@ export class CellGrid {
         else if (!isNaN(tryFloat) && value.length === tryFloat.toString().length) return tryFloat
          */
 
-       return Number.isNaN(value) ? value : value.toString()
+       return '' + value
       })
     })
 
@@ -95,12 +95,18 @@ export class CellGrid {
         let val1 = row1[colNumber]
         let val2 = row2[colNumber]
 
-        if (!Number.isNaN(val1) ){
+        //@ts-ignore compare as numbers if it is a number
+        if (!isNaN(val1) ){
           //@ts-ignore
           return val1-val2
         }
+        else{
+          let str1 = val1 + ''
+          let str2 = val2 + ''
+          return str1.localeCompare(str2)
+        }
 
-        return val1.toString().localeCompare(val2.toString())
+
       })
 
       this.cells.unshift(headers)
