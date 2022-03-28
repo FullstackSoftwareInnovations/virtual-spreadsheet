@@ -36,17 +36,27 @@ export class CellGrid {
         let autoCalc = autoWidthEnabled && (cellWidth === 'auto-deep' || rowIndex < autoWidthDepth)
         this.adjustColumnWidth(autoCalc, colIndex, value)
 
+        /*
         const tryInt = parseInt(value)
         const tryFloat = parseFloat(value)
         if (!isNaN(tryInt) && value.length === tryInt.toString().length) return tryInt
         else if (!isNaN(tryFloat) && value.length === tryFloat.toString().length) return tryFloat
-        else return value
+         */
+
+       return Number.isNaN(value) ? value : value.toString()
       })
     })
 
     this.sortable = sortable
     if (sortable) this.unsorted = [...cells]
+  }
 
+  filterRows(predicate: any){
+    let headers = this.unsorted.splice(0,1)[0]
+    this.cells = this.unsorted.filter((row, index) => predicate(row, index))
+    this.cells.unshift(headers)
+    this.unsorted.unshift(headers)
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
 
   setCSV(csv:string){
@@ -54,13 +64,19 @@ export class CellGrid {
     this.setCells(rows)
   }
 
-  setCells(newCells: string[][]){
+  setCells(newCells: (string | number) [][]){
     this.cells = newCells
   }
 
-  getCell(row: number, column: number){
-    column = this.virtualColumnIndices[column]-1
-    return this.cells[row][column]
+  getCell(rowIndex: number, columnIndex: number){
+    try{
+      columnIndex = this.virtualColumnIndices[columnIndex]-1
+      let row = this.cells[rowIndex]
+      return row[columnIndex]
+    } catch (ignored){
+      return ''
+    }
+
   }
 
   moveColumn(oldIndex: any, newIndex: any){

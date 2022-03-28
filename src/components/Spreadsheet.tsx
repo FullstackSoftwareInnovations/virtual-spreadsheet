@@ -43,13 +43,19 @@ export function Spreadsheet(props) {
     updateSize()
   }, [props.cells, props.csv])
 
+  useEffect(()=>{
+    if(props.rowFilter){
+      setCellGrid(cellGrid.filterRows(props.rowFilter))
+    }
+
+  }, [props.rowFilter])
+
 
   const [sortOrder, setSort] = useState('default')
 
   // Highlights the selected cell, row, or column
   const handleClick = (clicked: Coordinate) => {
     let virtCol = cellGrid.virtualColumnIndices[clicked.col]
-    console.log(clicked.col + ' ' + virtCol)
     // If cell has already been clicked...
     if (compareCoordinates(selectedCell, clicked) === 0) {
 
