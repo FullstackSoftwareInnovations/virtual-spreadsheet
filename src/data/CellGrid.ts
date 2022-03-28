@@ -97,15 +97,19 @@ export class CellGrid {
         let val1 = row1[colNumber]
         let val2 = row2[colNumber]
 
-        //@ts-ignore compare as numbers if it is a number
-        if (!isNaN(val1) ){
+        //@ts-ignore compare as numbers if they are
+        if(!isNaN(val1) && !isNaN(val2) ){
           //@ts-ignore
           return val1-val2
         }
         else{
           let str1 = val1 + ''
           let str2 = val2 + ''
-          return str1.localeCompare(str2)
+
+          //put empty strings at the bottom on normal sort
+          if(str1.trim() === '') return 1
+          if(str2.trim() === '') return -1
+          return str1.trim().localeCompare(str2.trim())
         }
 
 

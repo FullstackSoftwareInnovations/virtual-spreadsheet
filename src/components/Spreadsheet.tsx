@@ -43,6 +43,8 @@ export function Spreadsheet(props) {
     updateSize()
   }, [props.cells, props.csv])
 
+
+
   useEffect(()=>{
     if(props.rowFilter){
       setCellGrid(cellGrid.filterRows(props.rowFilter))
@@ -54,11 +56,19 @@ export function Spreadsheet(props) {
   const [sortOrder, setSort] = useState('default')
 
   // Highlights the selected cell, row, or column
+  // If clicked column was already selected, sort table by that column
   const handleClick = (clicked: Coordinate) => {
     let virtCol = cellGrid.virtualColumnIndices[clicked.col]
-    // If cell has already been clicked...
-    if (compareCoordinates(selectedCell, clicked) === 0) {
+    let alreadySelected = compareCoordinates(selectedCell, clicked) === 0
 
+    if (!alreadySelected){
+      if(clicked.row === 0) setSort('default') // reset sort order when new column header is clicked
+      setCell(clicked)
+      props.onCellSelect && props.onCellSelect(clicked, cellGrid.cells)
+    }
+
+    // already selected...
+    else{
       //... and they've clicked a column header with sortableColumns enabled
       if(selectedCell.row === 0 && props.sortableColumns){
         switch(sortOrder){
@@ -75,13 +85,7 @@ export function Spreadsheet(props) {
             setSort('default')
 
         }
-
       }
-
-    }
-    else{
-      setCell(clicked)
-      props.onCellSelect && props.onCellSelect(clicked, cellGrid.cells)
     }
 
     forceRender()
