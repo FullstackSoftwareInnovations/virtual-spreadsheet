@@ -53,7 +53,9 @@ export class CellGrid {
 
   filterRows(predicate: any){
     let headers = this.unsorted.splice(0,1)[0]
-    this.cells = this.unsorted.filter((row, index) => predicate(row, index))
+    let virtualHeadersWithoutRowHeader = this.virtualColumnIndices.map((index)=> index -1)
+    virtualHeadersWithoutRowHeader.splice(0,1)
+    this.cells = this.unsorted.filter((row, rowIndex) => predicate(row, rowIndex, virtualHeadersWithoutRowHeader))
     this.cells.unshift(headers)
     this.unsorted.unshift(headers)
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
