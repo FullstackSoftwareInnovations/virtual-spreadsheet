@@ -84,11 +84,10 @@ A 2-d array of values to be entered into the table
 ### firstRowHeaders: boolean (optional)
 If true, the first row will be used as column headers instead of data
 
-### rowFilter = function(row, index) => boolean
-Applied to items in the table. If you are using the rowFilter, you should
-also keep your source data in sync with changes made in the Spreadsheet.
-If you don't keep your source data in sync with the Spreadsheet, changes
-will be lost when you apply a new rowFilter.
+### rowFilter = function(row, rowIndex, columnIndices) => predicate()
+Applied to rows in the table. Will filter out the row if predicate returns false
+If using the draggableColumns prop, use the columnIndices[targetIndex] to index the row inside of your
+predicate. This will ensure the correct column is used in the filter criteria if user has moved the columns.
 
 ### draggableColumns: boolean (default: false)
 If true, the column headers can be dragged to re-order them
