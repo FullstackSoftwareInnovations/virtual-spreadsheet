@@ -5,7 +5,7 @@ import { Coordinate } from '../data/Coordinate'
 
 /* Default Styles */
 const defaultFont = '18px Arial'
-
+const selectedBlue =  '#0099ee'
 const defaultCellStyle = {
   verticalAlign: 'bottom',
   textAlign: 'center',
@@ -15,22 +15,26 @@ const defaultCellStyle = {
 }
 
 const defaultHeaderStyle = {
-  zIndex: 1,
+  zIndex: 0,
   cursor: 'pointer',
-  color: '#ffffff',
-  background: '#0077cc'
+  color: '#000000',
+  background: '#cccccc',
+  paddingTop: 3
 }
 
 const defaultDataCellStyle = {
   color: '#000000',
   background: '#ffffff',
   zIndex: 0,
-  cursor: 'text'
+  cursor: 'text',
+  outline: 'none'
 }
 
 const defaultActiveCellStyle = {
-  color: '#ffffff',
-  background: '#33bbff'
+  color: '#000000',
+  background: '#ffffff',
+  border: '3px solid',
+  borderColor: selectedBlue
 }
 
 /* UI Representation of cells */
@@ -86,7 +90,7 @@ export function ColumnHeaderCell(props) {
   }
 
 
- else return (
+  else return (
     <div style={style}
          onClick={props.onClick}>
       {props.title}
@@ -96,6 +100,8 @@ export function ColumnHeaderCell(props) {
 
 export function DataCell(props) {
   const [ref, hovered] = useHover()
+  const isRightBoundary = props.coordinate.col - 1 === props.maxCoordinate.col
+  const isBottomBoundary = props.coordinate.row === props.maxCoordinate.row
 
   let style = {
     ...props.style,
@@ -105,28 +111,38 @@ export function DataCell(props) {
     font: props.cellFont ?? defaultFont
   }
 
-  if (hovered || props.isSelected)
+  if (hovered || props.cellSelected) {
     style = {
       ...style,
       ...defaultActiveCellStyle,
-      ...(props.activeCellStyle ?? {})
+      ...(props.activeCellStyle ?? {}),
+      width: isRightBoundary ? style.width - 11: style.width - 8,
+      height: isBottomBoundary ? style.height - 8 :  style.height - 5
     }
+  }
+
+  else if (props.rowSelected || props.colSelected ){
+    style = {
+      ...style,
+      border: '1px solid black',
+      color: '#ffffff',
+      background: selectedBlue
+    }
+  }
 
   if (props.readOnly) style = {...style, cursor: 'pointer'}
 
   const handleClick = props.onClick ? props.onClick : () => {}
 
-  const data =  props.data === '' ? ' ' : props.data
+  const data =  props.data ? props.data : ''
+
 
   return (
-    <div onClick={handleClick}>
-      <input
-        ref={ref}
-        style={style}
-        onChange={props.update}
-        value={data}
-        disabled={props.readOnly}
-      />
+    <div onClick={handleClick} ref={ref}>
+      <input style={style}
+             onChange={props.update}
+             value={data}
+             disabled={props.readOnly}/>
     </div>
   )
 }
@@ -179,17 +195,21 @@ export function CellRenderer(
     updateCell(e.target.value, cell)
   }
 
-  const isSelected =
-    (selectedCell.row === row && selectedCell.col === realCol) ||
-    (selectedCell.row === row && selectedCell.col === 0) ||
-    (selectedCell.row === 0 && selectedCell.col === realCol)
+  const rowSelected = selectedCell.row === row && selectedCell.col === 0
+  const colSelected = selectedCell.row === 0 && selectedCell.col === realCol
+  const cellSelected= selectedCell.row === row && selectedCell.col === realCol
+
 
   return (
     <DataCell
       key={key}
       style={style}
+      coordinate={cell}
+      maxCoordinate = {{row: cellGrid.cells.length -1, col: cellGrid.cells[0].length -1}}
+      rowSelected ={rowSelected}
+      colSelected = {colSelected}
+      cellSelected = {cellSelected}
       data={cellGrid.getCell(row,realCol)}
-      isSelected={isSelected}
       onClick={handleClick}
       update={updater}
       {...props}

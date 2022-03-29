@@ -137,7 +137,7 @@ export function Spreadsheet(props) {
             columnWidth={(col) => cellGrid.widths[col.index]}
             fixedColumnCount={props.fixedColumnCount ?? 1}
             rowCount={cellGrid.cells.length}
-            rowHeight={props.cellHeight ?? 50}
+            rowHeight={props.cellHeight ?? 25}
             fixedRowCount={props.fixedRowCount ?? 1}
             height={height == 0 || isNaN(height) ? 400 : height}
             width={width == 0 || isNaN(width) ? 900 : width}
