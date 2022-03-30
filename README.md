@@ -146,8 +146,10 @@ Style the column number row. Avoid using height, width, font, and position.
 Style spreadsheet's data cells. Avoid using height, width, font, and position.
 
 ### activeCellStyle: CSSProperties
-Style spreadsheet's data cells when hovered or selected. Avoid using height, width, font, and position.
+Style data cells (not headers) when hovered or clicked on. Avoid using height, width, font, and position.
 
+### highlightedCellStyle: CSSProperties
+Style data cells (not headers) when its row or column header is clicked on. Avoid using height, width, font, and position.
 
 # License
 

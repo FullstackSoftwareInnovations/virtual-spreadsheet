@@ -114,7 +114,6 @@ export function Spreadsheet(props) {
       cellGrid,
       selectedCell,
       handleClick,
-      props.draggableColumns,
       handleColumnDrag,
       updateCell,
       columnIndex, // -1 so my colNum headers don't mess with coordinate calculations
@@ -142,6 +141,7 @@ export function Spreadsheet(props) {
             height={height == 0 || isNaN(height) ? 400 : height}
             width={width == 0 || isNaN(width) ? 900 : width}
             count={updateCount}
+            containerStyle = {{padding: '0 10px 10px 0'}}
           />
         )}
       </AutoSizer>

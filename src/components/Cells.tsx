@@ -5,7 +5,7 @@ import { Coordinate } from '../data/Coordinate'
 
 /* Default Styles */
 const defaultFont = '18px Arial'
-const selectedBlue =  '#0099ee'
+const selectedColor =  '#0099ee'
 const defaultCellStyle = {
   verticalAlign: 'bottom',
   textAlign: 'center',
@@ -17,9 +17,8 @@ const defaultCellStyle = {
 const defaultHeaderStyle = {
   zIndex: 0,
   cursor: 'pointer',
-  color: '#000000',
-  background: '#cccccc',
-  paddingTop: 3
+  color: '#3f3f3f',
+  background: '#cccccc'
 }
 
 const defaultDataCellStyle = {
@@ -34,7 +33,14 @@ const defaultActiveCellStyle = {
   color: '#000000',
   background: '#ffffff',
   border: '3px solid',
-  borderColor: selectedBlue
+  borderColor: selectedColor,
+  zIndex: 1
+}
+
+const defaultHighlightedCellStyle = {
+  border: '1px solid black',
+  color: '#ffffff',
+  background: selectedColor
 }
 
 /* UI Representation of cells */
@@ -48,8 +54,8 @@ export function RowHeaderCell(props) {
   }
 
   return (
-    <div style={style} onClick={props.onClick}>
-      {props.rowNumber}
+    <div onClick={props.onClick}>
+      <input disabled={true} value = {props.rowNumber} style = {style}/>
     </div>
   )
 }
@@ -71,6 +77,7 @@ export function ColumnHeaderCell(props) {
     const onDragOver = (event) => {
       event.preventDefault()
     }
+
     const onDrop = (event) => {
       const droppedItem = event.dataTransfer.getData("drag-item");
       if (droppedItem) {
@@ -82,9 +89,8 @@ export function ColumnHeaderCell(props) {
            onDragStart={onDragStart}
            onDragOver={onDragOver}
            onDrop={onDrop}
-           style={style}
            onClick={props.onClick}>
-        {props.title}
+        <input disabled={true} value = {props.title} style = {style}/>
       </div>
     )
   }
@@ -100,8 +106,6 @@ export function ColumnHeaderCell(props) {
 
 export function DataCell(props) {
   const [ref, hovered] = useHover()
-  const isRightBoundary = props.coordinate.col - 1 === props.maxCoordinate.col
-  const isBottomBoundary = props.coordinate.row === props.maxCoordinate.row
 
   let style = {
     ...props.style,
@@ -116,17 +120,16 @@ export function DataCell(props) {
       ...style,
       ...defaultActiveCellStyle,
       ...(props.activeCellStyle ?? {}),
-      width: isRightBoundary ? style.width - 11: style.width - 8,
-      height: isBottomBoundary ? style.height - 8 :  style.height - 5
+      width: props.isRightBoundary ? style.width - 4: style.width - 9,
+      height: props.isBottomBoundary ? style.height - 4 :  style.height - 7
     }
   }
 
   else if (props.rowSelected || props.colSelected ){
     style = {
       ...style,
-      border: '1px solid black',
-      color: '#ffffff',
-      background: selectedBlue
+      ...defaultHighlightedCellStyle,
+      ...(props.highlightedCellStyle ?? {})
     }
   }
 
@@ -152,7 +155,6 @@ export function CellRenderer(
   cellGrid: CellGrid,
   selectedCell: Coordinate,
   clickHandler,
-  draggableColumns,
   onMoveColumn,
   updateCell,
   realCol,
@@ -162,6 +164,11 @@ export function CellRenderer(
   props
 ) {
   let col = cellGrid.virtualColumnIndices[realCol]
+  const coordinate: Coordinate = { row: row, col: realCol }
+  const maxCoordinate= {row: cellGrid.cells.length -1, col: cellGrid.cells[0].length -1}
+
+  const isRightBoundary = coordinate.col - 1 === maxCoordinate.col
+  const isBottomBoundary = coordinate.row === maxCoordinate.row
 
   const handleClick = () => clickHandler({ row: row, col: realCol, val: '' })
   if (col === 0) {
@@ -170,6 +177,7 @@ export function CellRenderer(
         key={key}
         style={style}
         rowNumber={row === 0 ? '' : row}
+        isBottomBoundary = {isBottomBoundary}
         onClick={handleClick}
         {...props}
       />
@@ -179,8 +187,9 @@ export function CellRenderer(
       <ColumnHeaderCell
         key={key}
         style={style}
-        draggable = {draggableColumns}
+        draggable = {props.draggableColumns}
         colNumber={realCol}
+        isRightBoundary = {isRightBoundary}
         virtCol = {col}
         title = {cellGrid.getCell(row,realCol)}
         onClick={handleClick}
@@ -190,9 +199,9 @@ export function CellRenderer(
     )
   }
 
-  const cell: Coordinate = { row: row, col: realCol }
+
   const updater = (e: ChangeEvent<HTMLInputElement>) => {
-    updateCell(e.target.value, cell)
+    updateCell(e.target.value, coordinate)
   }
 
   const rowSelected = selectedCell.row === row && selectedCell.col === 0
@@ -204,8 +213,9 @@ export function CellRenderer(
     <DataCell
       key={key}
       style={style}
-      coordinate={cell}
-      maxCoordinate = {{row: cellGrid.cells.length -1, col: cellGrid.cells[0].length -1}}
+      coordinate={coordinate}
+      isRightBoundary = {isRightBoundary}
+      isBottomBoundary = {isBottomBoundary}
       rowSelected ={rowSelected}
       colSelected = {colSelected}
       cellSelected = {cellSelected}
