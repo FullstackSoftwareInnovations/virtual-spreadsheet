@@ -88,6 +88,10 @@ If true, the first row will be used as column headers instead of data
 Applied to rows in the table. Will filter out the row if boolean is false.
 If using the draggableColumns prop, use the index = columnIndices[UIColIndex] to index the row inside of your
 rowFilter function. This will ensure the correct column is used in the filter criteria if user has moved the columns.
+If you are using the rowFilter, you should also keep your source data in sync with changes made in the Spreadsheet.
+If you don't keep your source data in sync with the Spreadsheet, changes
+will be lost when you apply a new rowFilter.
+
 
 ### draggableColumns: boolean (default: false)
 If true, the column headers can be dragged to re-order them
