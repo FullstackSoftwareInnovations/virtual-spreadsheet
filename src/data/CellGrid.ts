@@ -1,10 +1,11 @@
 import { Coordinate } from './Coordinate'
 
+const defaultFilter: Function = () => true
 export class CellGrid {
   cells: (string | number)[][]
   sortable: boolean
   unsorted: (string | number)[][]
-  filter: Function = () => true
+  filter: Function = defaultFilter
   widths: number[]
   cellBaseWidth: number
   font: string
@@ -21,12 +22,12 @@ export class CellGrid {
     this.adjustColumnWidth(true, cell.col, value)
   }
 
-  loadCSV(csv:string, sortable = false, font = '14px arial', cellWidth: number | string = 'auto'){
+  loadCSV(csv:string, sortable = false, rowFilter = defaultFilter, font = '14px arial', cellWidth: number | string = 'auto'){
     let rows = csv.split('\n').map(row => row.split(','))
-    this.loadCells(rows, sortable, font, cellWidth)
+    this.loadCells(rows, sortable, rowFilter, font, cellWidth)
   }
 
-  loadCells(cells: string[][], sortable= false,  font = '14px arial', cellWidth: number | string = 'auto'){
+  loadCells(cells: string[][], sortable= false, rowFilter,  font = '14px arial', cellWidth: number | string = 'auto'){
     const autoWidthDepth: number = this.getAutoWidthMaxDepth(cellWidth)
     const autoWidthEnabled: boolean = this.autoWidthEnabled(cellWidth)
     this.font = font
@@ -49,7 +50,7 @@ export class CellGrid {
     })
 
     this.sortable = sortable
-    if (sortable) this.unsorted = [...cells]
+    if (sortable || rowFilter) this.unsorted = [...cells]
   }
 
   filterRows(predicate: Function){

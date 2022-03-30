@@ -28,7 +28,7 @@ export function Spreadsheet(props) {
         let headers = props.cells[0].map( (_col: string| number, index: number) => index+1 )
         toLoad.unshift(headers)
       }
-      cellGrid.loadCells(toLoad, props.sortableColumns, props.cellFont, props.cellWidth)
+      cellGrid.loadCells(toLoad, props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
     }
 
     else {
@@ -38,7 +38,7 @@ export function Spreadsheet(props) {
         let headers = firstRow.split(',').map( (_col: string| number, index: number) => index+1 )
         toLoad = headers.join(',') + '\n' + props.csv
       }
-      cellGrid.loadCSV(toLoad, props.sortableColumns, props.cellFont, props.cellWidth)
+      cellGrid.loadCSV(toLoad, props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
     }
     updateSize()
   }, [props.cells, props.csv])
@@ -49,7 +49,6 @@ export function Spreadsheet(props) {
     if(props.rowFilter){
       setCellGrid(cellGrid.filterRows(props.rowFilter))
     }
-
   }, [props.rowFilter])
 
 
@@ -58,14 +57,16 @@ export function Spreadsheet(props) {
   // Highlights the selected cell, row, or column
   // If clicked column was already selected, sort table by that column
   const handleClick = (clicked: Coordinate) => {
-    let virtCol = cellGrid.virtualColumnIndices[clicked.col]
+    let vcol = cellGrid.virtualColumnIndices[clicked.col]
     let alreadySelected = compareCoordinates(selectedCell, clicked) === 0
 
     if (!alreadySelected){
       if(clicked.row === 0) setSort('default') // reset sort order when new column header is clicked
       setCell(clicked)
-      props.onCellSelect && props.onCellSelect(clicked, cellGrid.cells)
+
+      props.onCellSelect && props.onCellSelect({row:clicked.row, col:vcol -1}, cellGrid.cells)
     }
+
 
     // already selected...
     else{
@@ -73,15 +74,15 @@ export function Spreadsheet(props) {
       if(selectedCell.row === 0 && props.sortableColumns){
         switch(sortOrder){
           case 'default':
-            cellGrid.sortColumn(virtCol, 'normal', props.sortFunction)
+            cellGrid.sortColumn(vcol, 'normal', props.sortFunction)
             setSort('normal')
             break
           case 'normal':
-            cellGrid.sortColumn(virtCol, 'reverse')
+            cellGrid.sortColumn(vcol, 'reverse')
             setSort('reverse')
             break
           default:
-            cellGrid.sortColumn(virtCol, 'default')
+            cellGrid.sortColumn(vcol, 'default')
             setSort('default')
 
         }
@@ -91,12 +92,25 @@ export function Spreadsheet(props) {
     forceRender()
   }
 
+  
   // Updates the cell value and resizes the grid if necessary
   const updateCell = (value, coordinate: Coordinate) => {
     // Call prop updater first so user has access to old and new vals
-    coordinate.col = cellGrid.virtualColumnIndices[coordinate.col] - 1 // -1 to account for not-real row headers
-    props.onCellUpdate && props.onCellUpdate(coordinate, value, cellGrid.cells)
-    cellGrid.update(coordinate, value)
+    let vcol = cellGrid.virtualColumnIndices[coordinate.col] -1 // -1 to account for not-real row headers
+    let vcoord = {row: coordinate.row, col: vcol}
+
+    cellGrid.update(vcoord, value)
+    if(props.onCellUpdate){
+      if (!props.firstRowHeaders) vcoord.row -=1
+      props.onCellUpdate(vcoord, value)
+    }
+
+
+
+
+
+
+
     updateSize()
   }
 
