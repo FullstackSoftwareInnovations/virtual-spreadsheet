@@ -112,7 +112,9 @@ export function DataCell(props) {
     ...defaultCellStyle,
     ...defaultDataCellStyle,
     ...(props.cellStyle ?? {}),
-    font: props.cellFont ?? defaultFont
+    font: props.cellFont ?? defaultFont,
+    width: props.isRightBoundary ? props.style.width - 7: props.style.width,
+    height: props.isBottomBoundary ? props.style.height - 4 : props.style.height
   }
 
   if (hovered || props.cellSelected) {
@@ -120,8 +122,8 @@ export function DataCell(props) {
       ...style,
       ...defaultActiveCellStyle,
       ...(props.activeCellStyle ?? {}),
-      width: props.isRightBoundary ? style.width - 4: style.width - 9,
-      height: props.isBottomBoundary ? style.height - 4 :  style.height - 7
+      width: props.isRightBoundary ? style.width - 4: style.width - 8,
+      height: props.isBottomBoundary ? style.height - 4:  style.height - 6
     }
   }
 
