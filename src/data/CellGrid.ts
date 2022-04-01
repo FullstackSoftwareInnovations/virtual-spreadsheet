@@ -27,7 +27,7 @@ export class CellGrid {
     this.loadCells(rows, sortable, rowFilter, font, cellWidth)
   }
 
-  loadCells(cells: string[][], sortable= false, rowFilter,  font = '14px arial', cellWidth: number | string = 'auto'){
+  loadCells(cells: (string |number)[][], sortable= false, rowFilter,  font = '14px arial', cellWidth: number | string = 'auto'){
     const autoWidthDepth: number = this.getAutoWidthMaxDepth(cellWidth)
     const autoWidthEnabled: boolean = this.autoWidthEnabled(cellWidth)
     this.font = font
