@@ -42,7 +42,10 @@
     "@types/node": "^12.12.38",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "babel-loader": "^8.2.4",
     "microbundle-crl": "^0.13.10",
+    "react-docgen": "^5.4.0",
+    "react-docs-markdown": "^0.8.0",
     "typescript": "^3.7.5"
   },
   "files": [
