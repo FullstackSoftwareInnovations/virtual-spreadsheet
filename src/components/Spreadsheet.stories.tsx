@@ -12,12 +12,21 @@ export default {
 
 const Template: ComponentStory<typeof Spreadsheet> = (args) => <Spreadsheet {...args} />;
 
+export const Empty = Template.bind({});
+Empty.args = {
+  cells: undefined,
+  height: '40vh',
+  width: '80vw'
+};
+
 export const Primary = Template.bind({});
 Primary.args = {
   cells: defaultData(),
   height: '40vh',
   width: '80vw'
 };
+
+
 
 function defaultData(){
   let rows = []

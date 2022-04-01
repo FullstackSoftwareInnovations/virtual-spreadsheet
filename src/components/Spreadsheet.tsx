@@ -31,7 +31,7 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
       cellGrid.loadCells(toLoad, props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
     }
 
-    else {
+    else if (props.csv){
       let toLoad = props.csv
       if(!props.firstRowHeaders){
         let firstRow = props.csv.substring(0, props.csv.indexOf('\n'))
@@ -40,6 +40,9 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
       }
       cellGrid.loadCSV(toLoad, props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
     }
+
+    else cellGrid.loadCells([[1],['']], props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
+
     updateSize()
   }, [props.cells, props.csv])
 
