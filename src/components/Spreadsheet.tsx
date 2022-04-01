@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {CSSProperties, useEffect, useRef, useState} from "react";
 import { CellRenderer } from './Cells'
 import { MultiGrid, AutoSizer } from 'react-virtualized'
 import type { Coordinate } from '../data/Coordinate'
 import {compareCoordinates, nullCoordinate} from '../data/Coordinate'
 import { CellGrid } from '../data/CellGrid'
 
-export function Spreadsheet(props) {
+export const Spreadsheet =({...props}: SpreadsheetProps) => {
   const speadsheetRef = useRef()
   const [cellGrid, setCellGrid] = useState<CellGrid>(new CellGrid())
   const [selectedCell, setCell] = useState(nullCoordinate())
@@ -92,7 +92,7 @@ export function Spreadsheet(props) {
     forceRender()
   }
 
-  
+
   // Updates the cell value and resizes the grid if necessary
   const updateCell = (value, coordinate: Coordinate) => {
     // Call prop updater first so user has access to old and new vals
@@ -104,12 +104,6 @@ export function Spreadsheet(props) {
       if (!props.firstRowHeaders) vcoord.row -=1
       props.onCellUpdate(vcoord, value)
     }
-
-
-
-
-
-
 
     updateSize()
   }
@@ -163,3 +157,153 @@ export function Spreadsheet(props) {
 
   )
 }
+
+
+export interface SpreadsheetProps {
+  /**
+   * Should use commas to delimit columns and newline to delimit rows.
+   * Values cannot currently have commas (TODO: add custom delimiters, improve value parsing)
+   */
+  csv?: string
+
+  /**
+   *
+   A 2-d array of values to be entered into the table
+   */
+  cells?: (string | number) [][]
+
+  /**
+   *
+   If true, the first row will be used as column headers instead of data
+   */
+  firstRowHeaders?: boolean
+
+  /**
+   * Applied to rows in the table. Will filter out the row if boolean is false.
+   *
+   * If using the draggableColumns prop, use the index = columnIndices[UIColIndex] to index the row inside of your
+   * rowFilter function. This will ensure the correct column is used in the filter criteria if user has moved the columns.
+   *
+   * If you are using the rowFilter, you should also keep your source data in sync with changes made in the Spreadsheet.
+   * If you don't keep your source data in sync with the Spreadsheet, changes
+   * will be lost when you apply a new rowFilter.
+   * @param row
+   * @param rowIndex
+   * @param columnIndices
+   */
+  rowFilter?: (row, rowIndex, columnIndices) => boolean
+
+
+
+  /**
+   * If true, the column headers can be dragged to re-order them
+   */
+  draggableColumns?: boolean
+
+  /**
+   * If true, the columns will be sorted when they are clicked while already selected.
+   * They will first be sorted in normal (alphabetical or numerical order), then reverse,
+   * then back to its default order. You can override the 'normal' sort function with
+   * the sortFunction prop.
+   */
+  sortableColumns?: boolean
+
+  /**
+   * Will be used as the 'normal' sort for your columns (if sortableColumns is enabled).
+   * @param val1
+   * @param val2
+   */
+  sortFunction?: (val1, val2) => number
+
+  /**
+   *
+   The number of left-side columns that will remain visible when horizontally scrolling
+   */
+  fixedColumnCount?: number
+
+  /**
+   * The number of top-side rows that will remain visible when vertically scrolling
+   */
+  fixedRowCount?: number
+
+
+  /**
+   * Spreadsheet will dynamically size to its container by default. If the container's size is 0 or undefined, the width will default to 900px
+
+   */
+  width?: string | number
+
+  /**
+   * Spreadsheet will dynamically size to its container by default. If the container's size is 0 or undefined, the height will default to 400px
+   */
+  height?: string | number
+
+
+  /**
+   * Called when a cell, row, or column is clicked. You can pass the coordinate and cells to the CellSelector function to get a 2-D array with the selected data
+   * @param coordinate
+   * @param cells
+   */
+  onCellSelect?: (coordinate?, cells?) => void
+
+  /**
+   * Called when a cell value is changed. You can do any state updates you need in this method
+   * @param coordinate: {row:number, col:number}
+   * @param newValue: string
+   * @param cells: (string | number)[][]
+   */
+  onCellUpdate?: (coordinate? , newValue?, cells?) => void
+
+  /**
+   * If present with no value or set to true, the data cells cannot be edited.
+   */
+  readOnly?: boolean
+
+  /**
+   * 'auto' calculates the width required for the each column. Limited to 1000 rows by default.
+   * 'auto-' followed by a number overrides the depth limit for the width calculation(e.g. 'auto-5000').
+   * 'auto-deep' will use every row in its width calculation.
+   *
+   * Override cautiously as too high of depth limit can cause the page to go unresponsive for 100K+ rows
+   */
+  cellWidth?: number | 'auto' | 'auto-deep' | 'auto-${number}'
+
+  /**
+   * Height of the data and header cells
+   */
+  cellHeight?: number
+
+  /**
+   * Must include size and typeset
+   */
+  cellFont?: string
+
+  /**
+   *Style the row number column. Avoid using height, width, font, and position.
+   */
+  rowHeaderStyle?: CSSProperties
+
+  /**
+   * Style the column number row. Avoid using height, width, font, and position.
+   */
+  columnHeaderStyle?: CSSProperties
+
+
+  /**
+   *Style spreadsheet's data cells. Avoid using height, width, font, and position.
+   */
+  cellStyle?: CSSProperties
+
+  /**
+   * Style data cells (not headers) when hovered or clicked on. Avoid using height, width, font, and position.
+   */
+  activeCellStyle?: CSSProperties
+
+  /**
+   * Style data cells (not headers) when its row or column header is clicked on. Avoid using height, width, font, and position.
+   */
+  highlightedCellStyle?: CSSProperties
+
+}
+
+

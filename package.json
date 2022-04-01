@@ -22,13 +22,23 @@
     "node": ">=10"
   },
   "scripts": {
-    "build": "microbundle-crl"
+    "build": "microbundle-crl",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "peerDependencies": {
     "react": "^16.0.0 || ^17.0.0",
     "react-dom": "^16.0.0 || ^17.0.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.17.8",
+    "@storybook/addon-actions": "^6.4.19",
+    "@storybook/addon-docs": "^6.4.19",
+    "@storybook/addon-essentials": "^6.4.19",
+    "@storybook/addon-interactions": "^6.4.19",
+    "@storybook/addon-links": "^6.4.19",
+    "@storybook/react": "^6.4.19",
+    "@storybook/testing-library": "^0.0.9",
     "@types/node": "^12.12.38",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
