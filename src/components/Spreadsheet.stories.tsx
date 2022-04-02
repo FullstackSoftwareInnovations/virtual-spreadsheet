@@ -19,16 +19,32 @@ Empty.args = {
   width: '80vw'
 };
 
-export const Primary = Template.bind({});
-Primary.args = {
+export const Full = Template.bind({});
+Full.args = {
   cells: defaultData(),
   height: '40vh',
   width: '80vw',
-  cellWidthModifier: (width, isActive) => {
-    console.log('modified')
-    return isActive ? width*2 : width
-  }
 };
+
+export const WithSizeModifiers = Template.bind({})
+
+WithSizeModifiers.args = {
+  cells: defaultData(),
+  height: '40vh',
+  width: '80vw',
+
+  // @ts-ignore
+  cellWidthModifier: (width, isActive, isHighlighted, isRightBoundary, isBottomBoundary) => {
+    console.log('modified')
+    return (isActive && !isRightBoundary) ? width+100 : width
+  },
+
+  // @ts-ignore
+  cellHeightModifier: (height, isActive, isHighlighted, isRightBoundary, isBottomBoundary) => {
+    console.log('modified')
+    return (isActive && !isBottomBoundary) ? height+30 : height
+  }
+}
 
 
 

@@ -136,15 +136,19 @@ export function DataCell(props) {
   }
 
   let sizeModifierParams = [
-    props.style.width, // calculatedWidth
     props.cellSelected, // isActive
     (props.rowSelected || props.colSelected), //isHighlighted
     props.isRightBoundary,
     props.isLeftBoundary
   ]
 
-  style.width = props.cellWidthModifier ? props.cellWidthModifier(...sizeModifierParams) : style.width
-  style.height = props.cellHeightModifier ? props.cellHeightModifier(...sizeModifierParams) : style.height
+  style.width = props.cellWidthModifier
+    ? props.cellWidthModifier( props.style.width,...sizeModifierParams)
+    : style.width
+
+  style.height = props.cellHeightModifier
+    ? props.cellHeightModifier( props.style.height,...sizeModifierParams)
+    : style.height
 
 
   if (props.readOnly) style = {...style, cursor: 'pointer'}
