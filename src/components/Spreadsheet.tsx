@@ -279,7 +279,8 @@ export interface SpreadsheetProps {
    * @param isRightBoundary
    * @param isBottomBoundary
    */
-  cellWidthModifer?: (calculatedWidth, isActive?, isHighlighted?, isRightBoundary?, isBottomBoundary?) => {}
+  cellWidthModifer?: (calculatedWidth, isActive?, isHighlighted?, isRightBoundary?, isBottomBoundary?)
+  => number | string
 
 
   /**
@@ -290,7 +291,8 @@ export interface SpreadsheetProps {
    * @param isRightBoundary
    * @param isBottomBoundary
    */
-  cellHeightModifer?: (calculatedHeight, isActive?, isHighlighted?, isRightBoundary?, isBottomBoundary?) => {}
+  cellHeightModifer?: (calculatedHeight, isActive?, isHighlighted?, isRightBoundary?, isBottomBoundary?)
+    => number | string
 
   /**
    * Height of the data and header cells
