@@ -111,19 +111,19 @@ export function DataCell(props) {
     ...props.style,
     ...defaultCellStyle,
     ...defaultDataCellStyle,
-    ...(props.cellStyle ?? {}),
     font: props.cellFont ?? defaultFont,
     width: props.isRightBoundary ? props.style.width - 7: props.style.width,
-    height: props.isBottomBoundary ? props.style.height - 4 : props.style.height
+    height: props.isBottomBoundary ? props.style.height - 4 : props.style.height,
+    ...(props.cellStyle ?? {}),
   }
 
   if (hovered || props.cellSelected) {
     style = {
       ...style,
       ...defaultActiveCellStyle,
-      ...(props.activeCellStyle ?? {}),
       width: props.isRightBoundary ? style.width - 4: style.width - 8,
-      height: props.isBottomBoundary ? style.height - 4:  style.height - 6
+      height: props.isBottomBoundary ? style.height - 4:  style.height - 6,
+      ...(props.activeCellStyle ?? {}),
     }
   }
 
