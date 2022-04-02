@@ -272,6 +272,27 @@ export interface SpreadsheetProps {
   cellWidth?: number | 'auto' | 'auto-deep' | 'auto-${number}'
 
   /**
+   * Used to modify the width calculated by auto-width if it miscalculates where the border should be
+   * @param calculatedWidth
+   * @param isActive
+   * @param isHighlighted
+   * @param isRightBoundary
+   * @param isBottomBoundary
+   */
+  cellWidthModifer?: (calculatedWidth, isActive?, isHighlighted?, isRightBoundary?, isBottomBoundary?) => {}
+
+
+  /**
+   * Used to modify the width calculated by auto-width if it miscalculates where the border should be
+   * @param calculatedHeight
+   * @param isActive
+   * @param isHighlighted
+   * @param isRightBoundary
+   * @param isBottomBoundary
+   */
+  cellHeightModifer?: (calculatedHeight, isActive?, isHighlighted?, isRightBoundary?, isBottomBoundary?) => {}
+
+  /**
    * Height of the data and header cells
    */
   cellHeight?: number

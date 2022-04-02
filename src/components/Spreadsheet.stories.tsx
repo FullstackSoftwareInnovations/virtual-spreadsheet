@@ -23,7 +23,11 @@ export const Primary = Template.bind({});
 Primary.args = {
   cells: defaultData(),
   height: '40vh',
-  width: '80vw'
+  width: '80vw',
+  cellWidthModifier: (width, isActive) => {
+    console.log('modified')
+    return isActive ? width*2 : width
+  }
 };
 
 

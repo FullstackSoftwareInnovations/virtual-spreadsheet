@@ -111,19 +111,19 @@ export function DataCell(props) {
     ...props.style,
     ...defaultCellStyle,
     ...defaultDataCellStyle,
+    ...(props.cellStyle ?? {}),
     font: props.cellFont ?? defaultFont,
     width: props.isRightBoundary ? props.style.width - 7: props.style.width,
-    height: props.isBottomBoundary ? props.style.height - 4 : props.style.height,
-    ...(props.cellStyle ?? {}),
+    height: props.isBottomBoundary ? props.style.height - 4 : props.style.height
   }
 
   if (hovered || props.cellSelected) {
     style = {
       ...style,
       ...defaultActiveCellStyle,
-      width: props.isRightBoundary ? style.width - 4: style.width - 8,
-      height: props.isBottomBoundary ? style.height - 4:  style.height - 6,
       ...(props.activeCellStyle ?? {}),
+      width: props.isRightBoundary ? style.width - 4: style.width - 8,
+      height: props.isBottomBoundary ? style.height - 4:  style.height - 6
     }
   }
 
@@ -134,6 +134,18 @@ export function DataCell(props) {
       ...(props.highlightedCellStyle ?? {})
     }
   }
+
+  let sizeModifierParams = [
+    props.style.width, // calculatedWidth
+    props.cellSelected, // isActive
+    (props.rowSelected || props.colSelected), //isHighlighted
+    props.isRightBoundary,
+    props.isLeftBoundary
+  ]
+
+  style.width = props.cellWidthModifier ? props.cellWidthModifier(...sizeModifierParams) : style.width
+  style.height = props.cellHeightModifier ? props.cellHeightModifier(...sizeModifierParams) : style.height
+
 
   if (props.readOnly) style = {...style, cursor: 'pointer'}
 
