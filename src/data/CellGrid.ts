@@ -22,12 +22,12 @@ export class CellGrid {
     this.adjustColumnWidth(true, cell.col, value)
   }
 
-  loadCSV(csv:string, sortable = false, rowFilter = defaultFilter, font = '14px arial', cellWidth: number | string = 'auto'){
+  loadCSV(csv:string, sortable = false, rowFilter = defaultFilter, font = '18px arial', cellWidth: number | string = 'auto'){
     let rows = csv.split('\n').map(row => row.split(','))
     this.loadCells(rows, sortable, rowFilter, font, cellWidth)
   }
 
-  loadCells(cells: (string |number)[][], sortable= false, rowFilter,  font = '14px arial', cellWidth: number | string = 'auto'){
+  loadCells(cells: (string |number)[][], sortable= false, rowFilter,  font = '18px arial', cellWidth: number | string = 'auto'){
     const autoWidthDepth: number = this.getAutoWidthMaxDepth(cellWidth)
     const autoWidthEnabled: boolean = this.autoWidthEnabled(cellWidth)
     this.font = font

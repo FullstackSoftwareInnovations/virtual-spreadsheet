@@ -3,15 +3,13 @@ import { useHover } from 'helpful-react-hooks'
 import { CellGrid } from '../data/CellGrid'
 import { Coordinate } from '../data/Coordinate'
 
-/* Default Styles */
-const defaultFont = '18px Arial'
+
 const selectedColor =  '#0099ee'
 const defaultCellStyle = {
   verticalAlign: 'bottom',
   textAlign: 'center',
   border: '1px solid black',
-  overflow: 'hidden',
-  fontSize: 12
+  overflow: 'hidden'
 }
 
 const defaultHeaderStyle = {
@@ -50,7 +48,7 @@ export function RowHeaderCell(props) {
     ...defaultCellStyle,
     ...defaultHeaderStyle,
     ...(props.rowHeaderStyle ?? {}),
-    font: props.cellFont ?? defaultFont
+    font: props.cellFont
   }
 
   return (
@@ -66,7 +64,7 @@ export function ColumnHeaderCell(props) {
     ...defaultCellStyle,
     ...defaultHeaderStyle,
     ...(props.columnHeaderStyle ?? {}),
-    font: props.cellFont ?? defaultFont
+    font: props.cellFont
   }
 
   if (props.draggable) {
@@ -112,7 +110,7 @@ export function DataCell(props) {
     ...defaultCellStyle,
     ...defaultDataCellStyle,
     ...(props.cellStyle ?? {}),
-    font: props.cellFont ?? defaultFont,
+    font: props.cellFont,
     width: props.isRightBoundary ? props.style.width - 7: props.style.width,
     height: props.isBottomBoundary ? props.style.height - 4 : props.style.height
   }
@@ -197,6 +195,7 @@ export function CellRenderer(
         rowNumber={row === 0 ? '' : row}
         isBottomBoundary = {isBottomBoundary}
         onClick={handleClick}
+        cellFont = {cellGrid.font}
         {...props}
       />
     )
@@ -212,6 +211,7 @@ export function CellRenderer(
         title = {cellGrid.getCell(row,realCol)}
         onClick={handleClick}
         onMove = {onMoveColumn}
+        cellFont = {cellGrid.font}
         {...props}
       />
     )
@@ -240,6 +240,7 @@ export function CellRenderer(
       data={cellGrid.getCell(row,realCol)}
       onClick={handleClick}
       update={updater}
+      cellFont = {cellGrid.font}
       {...props}
     />
   )
