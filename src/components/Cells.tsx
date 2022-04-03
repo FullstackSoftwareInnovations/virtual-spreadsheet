@@ -53,7 +53,7 @@ export function RowHeaderCell(props) {
 
   return (
     <div onClick={props.onClick}>
-      <input disabled={true} value = {props.rowNumber} style = {style}/>
+      <input disabled={true} value = {props.title} style = {style}/>
     </div>
   )
 }
@@ -179,27 +179,27 @@ export function CellRenderer(
   style,
   props
 ) {
-  let col = cellGrid.virtualColumnIndices[realCol]
+  let col = realCol === -1 ? realCol : cellGrid.virtualColumnIndices[realCol]
   const coordinate: Coordinate = { row: row, col: realCol }
   const maxCoordinate= {row: cellGrid.cells.length -1, col: cellGrid.cells[0].length -1}
 
-  const isRightBoundary = coordinate.col - 1 === maxCoordinate.col
+  const isRightBoundary = coordinate.col === maxCoordinate.col
   const isBottomBoundary = coordinate.row === maxCoordinate.row
 
   const handleClick = () => clickHandler({ row: row, col: realCol, val: '' })
-  if (col === 0) {
+  if (realCol === -1) {
     return (
       <RowHeaderCell
         key={key}
         style={style}
-        rowNumber={row === 0 ? '' : row}
+        title={cellGrid.rowHeaders[row+1]}
         isBottomBoundary = {isBottomBoundary}
         onClick={handleClick}
         cellFont = {cellGrid.font}
         {...props}
       />
     )
-  } else if (row === 0) {
+  } else if (row === -1) {
     return (
       <ColumnHeaderCell
         key={key}
@@ -208,7 +208,7 @@ export function CellRenderer(
         colNumber={realCol}
         isRightBoundary = {isRightBoundary}
         virtCol = {col}
-        title = {cellGrid.getCell(row,realCol)}
+        title = {cellGrid.columnHeaders[col]}
         onClick={handleClick}
         onMove = {onMoveColumn}
         cellFont = {cellGrid.font}
@@ -222,8 +222,8 @@ export function CellRenderer(
     updateCell(e.target.value, coordinate)
   }
 
-  const rowSelected = selectedCell.row === row && selectedCell.col === 0
-  const colSelected = selectedCell.row === 0 && selectedCell.col === realCol
+  const rowSelected = selectedCell.row === row && selectedCell.col === -1
+  const colSelected = selectedCell.row === -1 && selectedCell.col === realCol
   const cellSelected= selectedCell.row === row && selectedCell.col === realCol
 
 
@@ -248,9 +248,16 @@ export function CellRenderer(
 
 // Gets the data from the selected grid, row, column, or single-cell
 export function CellSelector(coordinate:Coordinate, cellGrid: (string | number)[][]){
-  if (coordinate.row === 0 && coordinate.col === -1 ) return cellGrid
-  else if (coordinate.row !== 0 && coordinate.col!== -1 ) return [[cellGrid[coordinate.row][coordinate.col]]]
+  //if left upper corner clicked
+  if (coordinate.row === -1 && coordinate.col === -1 ) return [[]]
+
+  //data cell clicked
+  else if (coordinate.row !== -1 && coordinate.col!== -1 ) return [[cellGrid[coordinate.row][coordinate.col]]]
+
+  //row header clicked
   else if (coordinate.col=== -1) return [cellGrid[coordinate.row]]
+
+  //col header clicked
   else return cellGrid.map(row => [row[coordinate.col]])
 
 }

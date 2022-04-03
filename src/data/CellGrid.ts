@@ -1,19 +1,20 @@
 import { Coordinate } from './Coordinate'
+import {CellSelector} from "../components/Cells";
 
 const defaultFilter: Function = () => true
 export class CellGrid {
-  cells: (string | number)[][]
+  cells: (string | number)[][]  = [[]]
   sortable: boolean
-  unsorted: (string | number)[][]
+  unsorted: (string | number)[][] = [[]]
   filter: Function = defaultFilter
-  widths: number[]
-  cellBaseWidth: number
+  cellBaseWidth: number = 100
+  widths: number[] = [100]
   font: string
   virtualColumnIndices: number [] //allows to "move" the data without actually moving it in the grid
+  columnHeaders: (string | number)[] = ['']
+  rowHeaders: (string | number)[] =['']
 
   constructor() {
-    this.cells = [[]]
-    this.widths = []
   }
 
   update(cell: Coordinate, value: string) {
@@ -22,30 +23,34 @@ export class CellGrid {
     this.adjustColumnWidth(true, cell.col, value)
   }
 
-  loadCSV(csv:string, sortable = false, rowFilter = defaultFilter, font = '18px arial', cellWidth: number | string = 'auto'){
-    let rows = csv.split('\n').map(row => row.split(','))
-    this.loadCells(rows, sortable, rowFilter, font, cellWidth)
-  }
-
-  loadCells(cells: (string |number)[][], sortable= false, rowFilter,  font = '18px arial', cellWidth: number | string = 'auto'){
+  loadCells(cells: (string |number)[][], firstRowHeaders = false, firstColumnHeaders = false, sortable= false, rowFilter,  font = '18px arial', cellWidth: number | string = 'auto'){
     const autoWidthDepth: number = this.getAutoWidthMaxDepth(cellWidth)
     const autoWidthEnabled: boolean = this.autoWidthEnabled(cellWidth)
     this.font = font
+
+    if (firstColumnHeaders) {
+      this.rowHeaders = cells.map((row) => row.splice(0, 1)[0])
+
+    }
+    else {
+      this.rowHeaders = cells.map((_ignored, index) => index === 0 ? '' : index)
+      this.rowHeaders.push(this.rowHeaders.length)
+    }
+
+    if (firstRowHeaders) {
+      this.columnHeaders = cells.splice(0, 1)[0]
+    } else {
+      this.columnHeaders = cells[0].map((_ignored, index) => index + 1)
+    }
+
     this.virtualColumnIndices = cells[0].map((_ignored, index) => index)
-    this.virtualColumnIndices.push(cells[0].length) // add column to account for row headers
+
+
     this.cells = cells.map((row, rowIndex) => {
       return row.map((value, colIndex) => {
         let autoCalc = autoWidthEnabled && (cellWidth === 'auto-deep' || rowIndex < autoWidthDepth)
         this.adjustColumnWidth(autoCalc, colIndex, value)
-
-        /*
-        const tryInt = parseInt(value)
-        const tryFloat = parseFloat(value)
-        if (!isNaN(tryInt) && value.length === tryInt.toString().length) return tryInt
-        else if (!isNaN(tryFloat) && value.length === tryFloat.toString().length) return tryFloat
-         */
-
-       return '' + value
+        return '' + value
       })
     })
 
@@ -54,12 +59,7 @@ export class CellGrid {
   }
 
   filterRows(predicate: Function){
-    let headers = this.unsorted.splice(0,1)[0]
-    let virtualHeadersWithoutRowHeader = this.virtualColumnIndices.map((index)=> index -1)
-    virtualHeadersWithoutRowHeader.splice(0,1)
-    this.cells = this.unsorted.filter((row, rowIndex) => predicate(row, rowIndex, virtualHeadersWithoutRowHeader))
-    this.cells.unshift(headers)
-    this.unsorted.unshift(headers)
+    this.cells = this.unsorted.filter((row, rowIndex) => predicate(row, rowIndex))
     this.filter = predicate
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
@@ -75,7 +75,7 @@ export class CellGrid {
 
   getCell(rowIndex: number, columnIndex: number){
     try{
-      columnIndex = this.virtualColumnIndices[columnIndex]-1
+      columnIndex = this.virtualColumnIndices[columnIndex]
       let row = this.cells[rowIndex]
       return row[columnIndex]
     } catch (ignored){
@@ -90,17 +90,13 @@ export class CellGrid {
   }
 
   sortColumn(colNumber: number, sortOrder: string, normalSort: Function = this.defaultSort){
-    colNumber = colNumber -1 //the row headers don't really exist
-    let headers = this.cells.splice(0,1)[0]
 
     if (sortOrder === 'normal'){
       this.cells.sort((row1, row2) => normalSort(row1[colNumber], row2[colNumber]))
-      this.cells.unshift(headers)
     }
 
     else if (sortOrder === 'reverse'){
       this.cells = this.cells.reverse()
-      this.cells.unshift(headers)
     }
 
     else {
@@ -110,20 +106,20 @@ export class CellGrid {
   }
 
   defaultSort(val1: (string | number), val2: (string | number) ): number{
-      //@ts-ignore compare as numbers if they are
-      if(!isNaN(val1) && !isNaN(val2) ){
-        //@ts-ignore
-        return val1-val2
-      }
-      else{
-        let str1 = val1 + ''
-        let str2 = val2 + ''
+    //@ts-ignore compare as numbers if they are
+    if(!isNaN(val1) && !isNaN(val2) ){
+      //@ts-ignore
+      return val1-val2
+    }
+    else{
+      let str1 = val1 + ''
+      let str2 = val2 + ''
 
-        //put empty strings at the bottom on normal sort
-        if(str1.trim() === '') return 1
-        if(str2.trim() === '') return -1
-        return str1.trim().localeCompare(str2.trim())
-      }
+      //put empty strings at the bottom on normal sort
+      if(str1.trim() === '') return 1
+      if(str2.trim() === '') return -1
+      return str1.trim().localeCompare(str2.trim())
+    }
 
   }
 
@@ -148,7 +144,7 @@ export class CellGrid {
   }
 
   adjustColumnWidth(autoCalc, colIndex, text) {
-    colIndex += 1 // +1 to account for rowNum column which has a fixed width
+    colIndex = colIndex +1 //account for detached 'row headers' column which is fixed length
     if (autoCalc) {
       // Calculate width and see if it is bigger than current column size
       const calcWidth: number = this.calcCellWidth(text)
