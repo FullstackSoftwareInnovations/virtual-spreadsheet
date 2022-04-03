@@ -22,27 +22,12 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
 
   // Formats the csv and loads it into the cell grid
   useEffect(() => {
-    if (props.cells){
-      let toLoad = [...props.cells]
-      if(!props.firstRowHeaders){
-        let headers = props.cells[0].map( (_col: string| number, index: number) => index+1 )
-        toLoad.unshift(headers)
-      }
-      cellGrid.loadCells(toLoad, props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
-    }
+    let toLoad
+    if (props.cells) toLoad = [...props.cells]
+    else if (props.csv)toLoad = props.csv.split('\n').map(row => row.split(','))
+    else toLoad = [[]]
 
-    else if (props.csv){
-      let toLoad = props.csv
-      if(!props.firstRowHeaders){
-        let firstRow = props.csv.substring(0, props.csv.indexOf('\n'))
-        let headers = firstRow.split(',').map( (_col: string| number, index: number) => index+1 )
-        toLoad = headers.join(',') + '\n' + props.csv
-      }
-      cellGrid.loadCSV(toLoad, props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
-    }
-
-    else cellGrid.loadCells([[1],['']], props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
-
+    cellGrid.loadCells(toLoad, props.firstRowHeaders, props.firstColumnHeaders, props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
     updateSize()
   }, [props.cells, props.csv])
 
@@ -64,17 +49,17 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
     let alreadySelected = compareCoordinates(selectedCell, clicked) === 0
 
     if (!alreadySelected){
-      if(clicked.row === 0) setSort('default') // reset sort order when new column header is clicked
+      if(clicked.row === -1) setSort('default') // reset sort order when new column header is clicked
       setCell(clicked)
 
-      props.onCellSelect && props.onCellSelect({row:clicked.row, col:vcol -1}, cellGrid.cells)
+      props.onCellSelect && props.onCellSelect({row:clicked.row, col:vcol}, cellGrid.cells)
     }
 
 
     // already selected...
     else{
       //... and they've clicked a column header with sortableColumns enabled
-      if(selectedCell.row === 0 && props.sortableColumns){
+      if(selectedCell.row === -1  && selectedCell.col !== -1 && props.sortableColumns){
         switch(sortOrder){
           case 'default':
             cellGrid.sortColumn(vcol, 'normal', props.sortFunction)
@@ -87,7 +72,6 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
           default:
             cellGrid.sortColumn(vcol, 'default')
             setSort('default')
-
         }
       }
     }
@@ -99,12 +83,11 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
   // Updates the cell value and resizes the grid if necessary
   const updateCell = (value, coordinate: Coordinate) => {
     // Call prop updater first so user has access to old and new vals
-    let vcol = cellGrid.virtualColumnIndices[coordinate.col] -1 // -1 to account for not-real row headers
+    let vcol = cellGrid.virtualColumnIndices[coordinate.col]
     let vcoord = {row: coordinate.row, col: vcol}
 
     cellGrid.update(vcoord, value)
     if(props.onCellUpdate){
-      if (!props.firstRowHeaders) vcoord.row -=1
       props.onCellUpdate(vcoord, value)
     }
 
@@ -127,8 +110,8 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
       handleClick,
       handleColumnDrag,
       updateCell,
-      columnIndex, // -1 so my colNum headers don't mess with coordinate calculations
-      rowIndex,
+      columnIndex -1, // -1 to account for detached headers
+      rowIndex -1, // -1 to account for detached headers
       key,
       style,
       props
@@ -143,12 +126,14 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
           <MultiGrid
             ref={speadsheetRef}
             cellRenderer={getCellRenderer}
-            columnCount={cellGrid.cells.length === 0 ? 1 : cellGrid.cells[0].length + 1}
+            columnCount={cellGrid.cells[0].length +1}
             columnWidth={(col) => cellGrid.widths[col.index]}
             fixedColumnCount={props.fixedColumnCount ?? 1}
-            rowCount={cellGrid.cells.length}
+
+            rowCount={cellGrid.cells.length+1}
             rowHeight={props.cellHeight ?? 28}
             fixedRowCount={props.fixedRowCount ?? 1}
+
             height={height == 0 || isNaN(height) ? 400 : height}
             width={width == 0 || isNaN(width) ? 900 : width}
             count={updateCount}
@@ -180,6 +165,13 @@ export interface SpreadsheetProps {
    If true, the first row will be used as column headers instead of data
    */
   firstRowHeaders?: boolean
+
+  /**
+   *
+   If true, the first column will be used as row headers instead of data
+   */
+  firstColumnHeaders?: boolean
+
 
   /**
    * Applied to rows in the table. Will filter out the row if boolean is false.
@@ -280,7 +272,7 @@ export interface SpreadsheetProps {
    * @param isBottomBoundary
    */
   cellWidthModifer?: (calculatedWidth, isActive?, isHighlighted?, isRightBoundary?, isBottomBoundary?)
-  => number | string
+    => number | string
 
 
   /**
