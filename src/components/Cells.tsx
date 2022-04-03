@@ -2,9 +2,11 @@ import React, {ChangeEvent, useState} from 'react'
 import { useHover } from 'helpful-react-hooks'
 import { CellGrid } from '../data/CellGrid'
 import { Coordinate } from '../data/Coordinate'
+import {evaluateExpression, processCellValue} from "../data/CellExpressionEvaluator";
 
 
 const selectedColor =  '#0099ee'
+
 const defaultCellStyle = {
   verticalAlign: 'bottom',
   textAlign: 'center',
@@ -153,8 +155,8 @@ export function DataCell(props) {
 
   const handleClick = props.onClick ? props.onClick : () => {}
 
-  const data =  props.data ? props.data : ''
-
+  let data =  props.data ? props.data : ''
+  data = props.cellSelected ? data : processCellValue(props.data, props.cells)
 
   return (
     <div onClick={handleClick} ref={ref}>
@@ -237,6 +239,7 @@ export function CellRenderer(
       rowSelected ={rowSelected}
       colSelected = {colSelected}
       cellSelected = {cellSelected}
+      cells = {cellGrid}
       data={cellGrid.getCell(row,realCol)}
       onClick={handleClick}
       update={updater}
@@ -248,8 +251,8 @@ export function CellRenderer(
 
 // Gets the data from the selected grid, row, column, or single-cell
 export function CellSelector(coordinate:Coordinate, cellGrid: (string | number)[][]){
-  if (coordinate.row === 0 && coordinate.col === -1 ) return cellGrid
-  else if (coordinate.row !== 0 && coordinate.col!== -1 ) return [[cellGrid[coordinate.row][coordinate.col]]]
+  if (coordinate.row === -1 && coordinate.col === -1 ) return cellGrid
+  else if (coordinate.row !== -1 && coordinate.col!== -1 ) return [[cellGrid[coordinate.row][coordinate.col]]]
   else if (coordinate.col=== -1) return [cellGrid[coordinate.row]]
   else return cellGrid.map(row => [row[coordinate.col]])
 
