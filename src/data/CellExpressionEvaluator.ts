@@ -43,8 +43,11 @@ export function evaluateExpression(type: string, exp:string, cells: (string | nu
 
 function getSelectionFlatlist(param: string, cells){
   let evalParams = []
-  let coordinate = getCoordFromAlphStr(param)
-  let selectedCells = CellSelector(coordinate, cells)
+  let coordinates = param.split(':') //range
+  let start = getCoordFromAlphStr(coordinates[0])
+  let end = coordinates[1] ? getCoordFromAlphStr(coordinates[1]) : undefined
+
+  let selectedCells = CellSelector(cells, start, end)
   selectedCells.forEach(row=> {
     row.forEach(val => evalParams.push(val))
   })
@@ -59,6 +62,8 @@ export const ExpressionTypes ={
   'MULT': multiply,
   "DIV": divide,
   "POW": power,
+  "MIN": min,
+  "MAX": max
 }
 
 export function copy(vals: (string | number)[]): string {
@@ -80,28 +85,48 @@ export function copy(vals: (string | number)[]): string {
 export function sum(vals: (string | number)[]): number {
   let num = 0
   // @ts-ignore
-  vals.forEach(val => num = num + (isNaN(Number(val)) ? val : Number(val)))
+  vals.forEach(val => num = num + (isNaN(Number(val)) ? 0 : Number(val)))
   return num
 }
 
 export function subtract(vals: (string | number)[]): number{
-  if(!vals[0][0]) return 0
-  return 1
+  let num = 0
+  // @ts-ignore
+  vals.forEach(val => num = num - (isNaN(Number(val)) ? 0 : Number(val)))
+  return num
 }
 
 export function multiply(vals: (string | number)[]): number {
-  if (!vals[0][0]) return 0
-  return 1
+  let num = 1
+  // @ts-ignore
+  vals.forEach(val => num = num * (isNaN(Number(val)) ? 1 : Number(val)))
+  return num
 }
 
 export function divide(vals: (string | number)[]): number {
-  if (!vals[0][0]) return 0
-  return 1
+  let num = 1
+  // @ts-ignore
+  vals.forEach(val => num = num / (isNaN(Number(val)) ? 1 : Number(val)))
+  return num
 }
 
 export function power(vals: (string | number)[]): number{
-  if(!vals[0][0]) return 0
-  return 1
+  let num = 0
+  // @ts-ignore
+  vals.forEach(val => num = Math.pow(num, val))
+  return num
+}
+
+export function min(vals: (string | number)[]): number{
+  vals= vals.filter(val => !isNaN(Number(val)))
+  //@ts-ignore
+  return Math.min(...vals)
+}
+
+export function max(vals: (string | number)[]): number{
+  vals= vals.filter(val => !isNaN(Number(val)))
+  //@ts-ignore
+  return Math.max(...vals)
 }
 
 
