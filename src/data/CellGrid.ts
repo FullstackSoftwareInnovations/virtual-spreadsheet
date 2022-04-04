@@ -40,7 +40,7 @@ export class CellGrid {
     if (firstRowHeaders) {
       this.columnHeaders = cells.splice(0, 1)[0]
     } else {
-      this.columnHeaders = cells[0].map((_ignored, index) => index + 1)
+      this.columnHeaders = cells[0].map((_ignored, index) => getColumnAlphCoord(index))
     }
 
     this.virtualColumnIndices = cells[0].map((_ignored, index) => index)
@@ -165,6 +165,35 @@ export class CellGrid {
     return Math.ceil(metrics.width / this.cellBaseWidth) * this.cellBaseWidth
   }
 
+}
+
+
+export function getColumnAlphCoord(colIndex){
+  colIndex +=1
+  let s = ''
+  let t
+
+  console.log(colIndex)
+  while (colIndex > 0) {
+    t = colIndex % 26;
+    s = String.fromCharCode(64 +t) + s
+    colIndex = (colIndex - t);
+  }
+  return s
+}
+
+export function getCoordFromAlphStr(str){
+  str = str.toUpperCase()
+  let i
+  let col = 0
+
+  for(i = 0; i < str.length; i++){
+    if (str.charAt(i).match(/[A-Z]/i)) col += str.charCodeAt(i) -65
+    else break
+  }
+
+  let row = Number( str.substring(i))-1
+  return {row: row, col: col}
 }
 
 

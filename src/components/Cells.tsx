@@ -156,7 +156,7 @@ export function DataCell(props) {
   const handleClick = props.onClick ? props.onClick : () => {}
 
   let data =  props.data ? props.data : ''
-  data = props.cellSelected ? data : processCellValue(props.data, props.cells)
+  data = props.cellSelected ? data : processCellValue(props.data, props.cellGrid.cells)
 
   return (
     <div onClick={handleClick} ref={ref}>
@@ -239,7 +239,7 @@ export function CellRenderer(
       rowSelected ={rowSelected}
       colSelected = {colSelected}
       cellSelected = {cellSelected}
-      cells = {cellGrid}
+      cellGrid = {cellGrid}
       data={cellGrid.getCell(row,realCol)}
       onClick={handleClick}
       update={updater}
@@ -264,3 +264,6 @@ export function CellSelector(coordinate:Coordinate, cellGrid: (string | number)[
   else return cellGrid.map(row => [row[coordinate.col]])
 
 }
+
+
+
