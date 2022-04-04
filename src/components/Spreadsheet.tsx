@@ -52,7 +52,7 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
       if(clicked.row === -1) setSort('default') // reset sort order when new column header is clicked
       setCell(clicked)
 
-      props.onCellSelect && props.onCellSelect({row:clicked.row, col:vcol}, cellGrid.cells)
+      props.onCellSelect && props.onCellSelect( cellGrid.cells, {row:clicked.row, col:vcol})
     }
 
 

@@ -24,20 +24,20 @@ function SpreadsheetExample () {
   const [csv, setCSV] = useState("hi,mom\ni'm,on tv!")
 
   /* Used to demonstrate the CellSelector. Not necessary for operation */
-  const [selectedData, setData] = useState([['']])
+  const [selectedData, setSelectedData] = useState([['']])
 
-  const getSelectedData = (coordinate, cells) => {
+  const getSelectedData = (cells, coordinate) => {
     /*
      * CellSelector retrieves the row, column or cell selected in a 2-d array
      * Can be used for any operations you need to perform when data is selected
      */
-    setData(CellSelector(coordinate, cells))
+    setSelectedData(CellSelector(cells, coordinate))
   }
 
   /* Do any state updates you need by passing a function to the onUpdate prop */
   const processUpdate = (coordinate, newVal, cells) => {
     cells[coordinate.row][coordinate.col] = newVal
-    setData(CellSelector(coordinate, cells))
+    setSelectedData(CellSelector(coordinate, cells))
   }
 
   fetch('/big_sample.csv')

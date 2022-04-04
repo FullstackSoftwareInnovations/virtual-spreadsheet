@@ -250,18 +250,34 @@ export function CellRenderer(
 }
 
 // Gets the data from the selected grid, row, column, or single-cell
-export function CellSelector(coordinate:Coordinate, cellGrid: (string | number)[][]){
-  //if left upper corner clicked
-  if (coordinate.row === -1 && coordinate.col === -1 ) return [[]]
+export function CellSelector(cells: (string | number)[][],start:Coordinate, end?: Coordinate){
+  if(!end){
+    //if left upper corner clicked
+    if (start.row === -1 && start.col === -1 ) return [[]]
 
-  //data cell clicked
-  else if (coordinate.row !== -1 && coordinate.col!== -1 ) return [[cellGrid[coordinate.row][coordinate.col]]]
+    //data cell clicked
+    else if (start.row !== -1 && start.col!== -1 ) return [[cells[start.row][start.col]]]
 
-  //row header clicked
-  else if (coordinate.col=== -1) return [cellGrid[coordinate.row]]
+    //row header clicked
+    else if (start.col=== -1) return [cells[start.row]]
 
-  //col header clicked
-  else return cellGrid.map(row => [row[coordinate.col]])
+    //col header clicked
+    else return cells.map(row => [row[start.col]])
+  }
+
+  else{
+    // Lets assume that it won't be -1...
+    // TODO: stop making assumptions
+    let selection = []
+    for(let row = start.row; row <= end.row; row++){
+      selection.push(cells[row].slice(start.col, end.col+1))
+    }
+    console.log(selection)
+    return selection
+  }
+
+
+
 
 }
 
