@@ -59,7 +59,8 @@ export class CellGrid {
   }
 
   filterRows(predicate: Function){
-    this.cells = this.unsorted.filter((row, rowIndex) => predicate(row, rowIndex))
+    let filtered = this.unsorted.filter((row, rowIndex) => predicate(row, rowIndex))
+    this.cells = filtered[0] ? filtered : [[]]
     this.filter = predicate
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
