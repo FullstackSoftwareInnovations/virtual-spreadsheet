@@ -25,11 +25,12 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
     let toLoad
     if (props.cells && props.cells[0]) toLoad = [...props.cells]
     else if (props.csv)toLoad = props.csv.split('\n').map(row => row.split(','))
-    else toLoad = [[]]
+    else toLoad = [[' ']]
 
     cellGrid.loadCells(toLoad, props.firstRowHeaders, props.firstColumnHeaders, props.sortableColumns, props.rowFilter, props.cellFont, props.cellWidth)
     updateSize()
   }, [props.cells, props.csv])
+
 
 
 

@@ -11,8 +11,8 @@ export class CellGrid {
   widths: number[] = [100]
   font: string
   virtualColumnIndices: number [] //allows to "move" the data without actually moving it in the grid
-  columnHeaders: (string | number)[] = ['']
-  rowHeaders: (string | number)[] =['']
+  columnHeaders: (string | number)[] = [' ']
+  rowHeaders: (string | number)[] =[' ']
 
   constructor() {
   }
@@ -43,16 +43,19 @@ export class CellGrid {
       this.columnHeaders = cells[0].map((_ignored, index) => getColumnAlphCoord(index))
     }
 
+
+    if (!cells[0]) cells = [[' ']]
     this.virtualColumnIndices = cells[0].map((_ignored, index) => index)
-
-
-    this.cells = cells.map((row, rowIndex) => {
-      return row.map((value, colIndex) => {
-        let autoCalc = autoWidthEnabled && (cellWidth === 'auto-deep' || rowIndex < autoWidthDepth)
-        this.adjustColumnWidth(autoCalc, colIndex, value)
-        return '' + value
+    if(cells[0]){
+      this.cells = cells.map((row, rowIndex) => {
+        return row.map((value, colIndex) => {
+          let autoCalc = autoWidthEnabled && (cellWidth === 'auto-deep' || rowIndex < autoWidthDepth)
+          this.adjustColumnWidth(autoCalc, colIndex, value)
+          return '' + value
+        })
       })
-    })
+    }
+
 
     this.sortable = sortable
     if (sortable || rowFilter) this.unsorted = [...cells]
@@ -60,7 +63,7 @@ export class CellGrid {
 
   filterRows(predicate: Function){
     let filtered = this.unsorted.filter((row, rowIndex) => predicate(row, rowIndex))
-    this.cells = filtered[0] ? filtered : [[]]
+    this.cells = filtered[0] ? filtered : [[' ']]
     this.filter = predicate
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
