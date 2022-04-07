@@ -23,7 +23,7 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
   // Formats the csv and loads it into the cell grid
   useEffect(() => {
     let toLoad
-    if (props.cells) toLoad = [...props.cells]
+    if (props.cells && props.cells[0]) toLoad = [...props.cells]
     else if (props.csv)toLoad = props.csv.split('\n').map(row => row.split(','))
     else toLoad = [[]]
 

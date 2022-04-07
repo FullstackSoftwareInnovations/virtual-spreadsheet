@@ -12,9 +12,16 @@ export default {
 
 const Template: ComponentStory<typeof Spreadsheet> = (args) => <Spreadsheet {...args} />;
 
-export const Empty = Template.bind({});
-Empty.args = {
+export const UndefinedData = Template.bind({});
+UndefinedData.args = {
   cells: undefined,
+  height: '40vh',
+  width: '80vw'
+};
+
+export const TableWithNoRows = Template.bind({});
+TableWithNoRows.args = {
+  cells: [],
   height: '40vh',
   width: '80vw'
 };

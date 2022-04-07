@@ -1,6 +1,6 @@
 {
   "name": "virtual-spreadsheet",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A lightweight, virtualized spreadsheet capable of supporting millions of cells of data with formulas.",
   "keywords": [
     "react",
