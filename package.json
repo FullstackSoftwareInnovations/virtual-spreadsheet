@@ -1,7 +1,7 @@
 {
   "name": "virtual-spreadsheet",
-  "version": "0.2.14",
-  "description": "A lightweight, virtualized spreadsheet capable of supporting millions of cells of data.",
+  "version": "0.3.0",
+  "description": "A lightweight, virtualized spreadsheet capable of supporting millions of cells of data with formulas.",
   "keywords": [
     "react",
     "virtual",
@@ -10,6 +10,15 @@
     "csv",
     "excel",
     "table",
+    "grid",
+    "sheet",
+    "react table",
+    "react grid",
+    "react sheet",
+    "data",
+    "data table",
+    "data grid",
+    "data sheet",
     "workbook"
   ],
   "author": "FullstackSoftwareInnovations",
