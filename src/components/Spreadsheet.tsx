@@ -36,6 +36,7 @@ export const Spreadsheet =({...props}: SpreadsheetProps) => {
   useEffect(()=>{
     if(props.rowFilter){
       setCellGrid(cellGrid.filterRows(props.rowFilter))
+      forceRender()
     }
   }, [props.rowFilter])
 
